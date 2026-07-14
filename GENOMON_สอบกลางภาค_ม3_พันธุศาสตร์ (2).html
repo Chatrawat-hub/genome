@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GENOMON — ศึกนักเพาะพันธุ์แห่งยีน | สอบกลางภาค วิทยาศาสตร์ ม.3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0E0B1F;      /* พื้นห้องฟักไข่ */
+  --shell:#191238;     /* แผงเปลือกไข่ */
+  --shell2:#221944;
+  --membrane:#3A2C7A;  /* เยื่อหุ้ม / เส้นขอบ */
+  --yolk:#FFC24B;      /* ไข่แดง = ปุ่มหลัก/เวลา */
+  --jade:#4BE0A8;      /* อัลลีลเด่น = สำเร็จ */
+  --rose:#FF5D8F;      /* อัลลีลด้อย = เตือน/กลายพันธุ์ */
+  --cyan:#5AD8FF;
+  --ink:#EDEAFB;
+  --mist:#A79FD6;
+  --r:14px;
+  --shadow:0 18px 40px -18px rgba(0,0,0,.75);
+  --dsp:'Kanit','Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif;
+  --body:'Sarabun','Noto Sans Thai','Leelawadee UI',Tahoma,sans-serif;
+  --mono:'IBM Plex Mono','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1100px 700px at 12% -10%, #2A1F5E 0%, transparent 55%),
+    radial-gradient(900px 600px at 95% 0%, #123B4D 0%, transparent 50%),
+    var(--void);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* ตารางพันเนตต์เป็นลายพื้นหลัง = โมทีฟหลักของเกม */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.05;
+  background-image:linear-gradient(var(--mist) 1px,transparent 1px),linear-gradient(90deg,var(--mist) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(circle at 50% 30%, #000 0%, transparent 75%);
+  -webkit-mask-image:radial-gradient(circle at 50% 30%, #000 0%, transparent 75%);
+}
+#app{position:relative;z-index:1;min-height:100%}
+h1,h2,h3,h4{font-family:var(--dsp);font-weight:600;line-height:1.35;letter-spacing:.2px}
+button{font-family:var(--dsp);cursor:pointer;border:0}
+input,textarea,select{font-family:var(--body);font-size:1rem}
+:focus-visible{outline:3px solid var(--yolk);outline-offset:2px;border-radius:6px}
+
+.wrap{max-width:1100px;margin:0 auto;padding:24px 18px 90px}
+.narrow{max-width:660px}
+
+/* ---------- ปุ่ม ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(180deg,#FFD37A,var(--yolk));color:#2A1A00;
+  font-weight:700;font-size:1.02rem;padding:13px 24px;border-radius:12px;
+  box-shadow:0 6px 0 #B67F13, 0 14px 26px -12px rgba(255,194,75,.7);
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #B67F13}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:0 6px 0 #6b6b6b}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--membrane);box-shadow:none;font-weight:500}
+.btn.ghost:hover{border-color:var(--yolk);color:var(--yolk)}
+.btn.ghost:active{transform:none}
+.btn.jade{background:linear-gradient(180deg,#7FF3C6,var(--jade));color:#02291C;box-shadow:0 6px 0 #2A9A72}
+.btn.jade:active{box-shadow:0 2px 0 #2A9A72}
+.btn.sm{padding:8px 14px;font-size:.9rem;box-shadow:none;border-radius:10px}
+.btn.block{width:100%}
+
+/* ---------- แผง ---------- */
+.card{
+  background:linear-gradient(180deg,var(--shell2),var(--shell));
+  border:1px solid var(--membrane);border-radius:var(--r);
+  box-shadow:var(--shadow);padding:22px;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mist);display:block;margin-bottom:6px;
+}
+.muted{color:var(--mist)}
+.mono{font-family:var(--mono)}
+
+/* ---------- หน้าลงทะเบียน ---------- */
+.hero{text-align:center;padding:38px 0 10px}
+.logo{
+  font-family:var(--dsp);font-weight:700;font-size:clamp(2.4rem,7vw,4rem);line-height:1;
+  background:linear-gradient(100deg,var(--jade),var(--cyan) 40%,var(--yolk) 75%,var(--rose));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:2px;
+}
+.tagline{font-family:var(--dsp);color:var(--ink);font-size:1.05rem;margin-top:2px}
+.sub{color:var(--mist);font-size:.95rem;margin-top:6px}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-family:var(--dsp);font-size:.9rem;color:var(--mist);margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;background:#120E2B;color:var(--ink);
+  border:1.5px solid var(--membrane);border-radius:10px;padding:12px 14px;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--yolk);outline:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--rose);font-size:.88rem;margin-top:8px;min-height:20px}
+
+.rules{list-style:none;display:grid;gap:8px;margin-top:6px}
+.rules li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;color:var(--ink)}
+.rules li b{color:var(--yolk)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--jade);flex:0 0 8px;margin-top:9px}
+
+/* ---------- เลือกไข่ ---------- */
+.eggs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+.egg{
+  background:var(--shell);border:2px solid var(--membrane);border-radius:16px;
+  padding:16px 10px;text-align:center;transition:.18s;color:var(--ink);
+}
+.egg:hover{transform:translateY(-4px);border-color:var(--yolk)}
+.egg.on{border-color:var(--yolk);background:#2A2050;box-shadow:0 0 0 3px rgba(255,194,75,.22)}
+.egg .nm{font-family:var(--dsp);font-weight:600;margin-top:6px}
+.egg .ds{font-size:.8rem;color:var(--mist);line-height:1.5}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.float{animation:bob 3.2s ease-in-out infinite}
+@keyframes shakeEgg{0%,100%{transform:rotate(0)}20%{transform:rotate(-7deg)}40%{transform:rotate(6deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(3deg)}}
+.hatching{animation:shakeEgg .5s ease-in-out 6}
+@keyframes popIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.pop{animation:popIn .55s cubic-bezier(.2,1.5,.4,1)}
+@keyframes flash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.flash{position:fixed;inset:0;background:#fff;z-index:99;animation:flash .5s ease-out forwards;pointer-events:none}
+
+/* ---------- HUD ---------- */
+.hud{
+  position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+  background:rgba(14,11,31,.86);border-bottom:1px solid var(--membrane);
+}
+.hud-in{max-width:1100px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:14px}
+.hud .who{font-family:var(--dsp);font-size:.92rem;line-height:1.25;min-width:0}
+.hud .who small{display:block;color:var(--mist);font-size:.75rem;font-family:var(--mono)}
+.spacer{flex:1}
+.timer{
+  font-family:var(--mono);font-weight:600;font-size:1.3rem;color:var(--yolk);
+  background:#120E2B;border:1.5px solid var(--membrane);border-radius:10px;padding:4px 12px;letter-spacing:1px;
+}
+.timer.warn{color:#FFB020;border-color:#FFB020}
+.timer.crit{color:var(--rose);border-color:var(--rose);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.pips{display:flex;gap:6px}
+.pip{width:11px;height:11px;border-radius:3px;background:var(--membrane);transform:rotate(45deg)}
+.pip.done{background:var(--jade)}
+.pip.now{background:var(--yolk);box-shadow:0 0 10px var(--yolk)}
+
+/* ---------- แผนที่ ---------- */
+.route{display:grid;gap:12px;margin-top:14px}
+.node{
+  display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;
+  background:linear-gradient(180deg,var(--shell2),var(--shell));
+  border:1.5px solid var(--membrane);border-left:5px solid var(--membrane);
+  border-radius:12px;padding:12px 16px;text-align:left;width:100%;color:var(--ink);
+  transition:.15s;
+}
+.node:hover:not(:disabled){border-left-color:var(--yolk);transform:translateX(3px)}
+.node:disabled{opacity:.42;cursor:not-allowed}
+.node.done{border-left-color:var(--jade)}
+.node.now{border-left-color:var(--yolk);box-shadow:0 0 0 2px rgba(255,194,75,.2)}
+.node .zn{font-family:var(--dsp);font-weight:600;font-size:1.05rem}
+.node .zs{font-size:.83rem;color:var(--mist)}
+.node .badge{font-family:var(--mono);font-size:.75rem;color:var(--void);background:var(--jade);padding:3px 9px;border-radius:20px;font-weight:600}
+.node .badge.wait{background:var(--membrane);color:var(--mist)}
+.zicon{width:56px;height:56px;display:grid;place-items:center;background:#120E2B;border-radius:12px;border:1px solid var(--membrane);font-size:1.6rem}
+
+/* ---------- ห้องสอบ (ด่าน) ---------- */
+.battle{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:14px 18px;background:linear-gradient(180deg,#241A4F,#160F35);border:1px solid var(--membrane);border-radius:var(--r);margin-bottom:16px;overflow:hidden;position:relative}
+.battle::after{content:"";position:absolute;inset:0;background:radial-gradient(400px 120px at 78% 100%, rgba(255,93,143,.22), transparent 70%);pointer-events:none}
+.hp{width:min(230px,44vw)}
+.hp .lbl{font-family:var(--dsp);font-size:.9rem;display:flex;justify-content:space-between;align-items:baseline}
+.hp .lbl span{font-family:var(--mono);font-size:.75rem;color:var(--mist)}
+.bar{height:12px;background:#0B0820;border:1.5px solid var(--membrane);border-radius:20px;overflow:hidden;margin-top:5px}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),#FF9F45);width:100%;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.bar.xp > i{background:linear-gradient(90deg,var(--jade),var(--cyan))}
+
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;align-items:start}
+@media(max-width:880px){.cols{grid-template-columns:1fr}.eggs{grid-template-columns:1fr}}
+.stim{position:sticky;top:64px}
+.stim h3{color:var(--cyan);font-size:1.1rem;margin-bottom:10px}
+.stim .card{border-left:4px solid var(--cyan)}
+.stim p{margin:0 0 10px}
+.stim ul,.stim ol{margin:0 0 10px 20px}
+.stim li{margin-bottom:4px}
+.note{background:#120E2B;border:1px dashed var(--membrane);border-radius:10px;padding:10px 12px;font-size:.9rem;color:var(--mist);margin-top:10px}
+.note b{color:var(--yolk)}
+
+table.data{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem;font-family:var(--mono)}
+table.data th,table.data td{border:1px solid var(--membrane);padding:7px 9px;text-align:center}
+table.data th{background:#120E2B;color:var(--cyan);font-weight:600;font-size:.85rem}
+table.data td.l,table.data th.l{text-align:left;font-family:var(--body)}
+table.punnett{border-collapse:collapse;margin:10px auto;font-family:var(--mono);font-weight:600}
+table.punnett td,table.punnett th{border:2px solid var(--membrane);width:54px;height:44px;text-align:center}
+table.punnett th{background:#120E2B;color:var(--yolk)}
+
+.q{margin-bottom:18px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.qno{font-family:var(--mono);font-size:.78rem;color:var(--void);background:var(--yolk);padding:2px 9px;border-radius:20px;font-weight:600}
+.qpt{font-family:var(--mono);font-size:.78rem;color:var(--jade)}
+.q p.prompt{font-size:1.03rem;margin-bottom:10px}
+textarea.ans{
+  width:100%;min-height:132px;resize:vertical;background:#120E2B;color:var(--ink);
+  border:1.5px solid var(--membrane);border-radius:12px;padding:13px 15px;line-height:1.85;font-size:1.02rem;
+}
+textarea.ans:focus{border-color:var(--yolk);outline:none;background:#150F33}
+.meter{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.76rem;color:var(--mist);margin-top:5px}
+.meter .low{color:var(--rose)}
+.meter .ok{color:var(--jade)}
+.coach{background:rgba(90,216,255,.08);border:1px solid rgba(90,216,255,.35);border-radius:10px;padding:10px 12px;margin-top:9px;font-size:.9rem;color:#CFEFFF}
+.coach b{color:var(--cyan)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.saved{font-family:var(--mono);font-size:.78rem;color:var(--jade);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+
+/* ---------- ผลลัพธ์ ---------- */
+.score-big{font-family:var(--dsp);font-weight:700;font-size:clamp(3.2rem,12vw,5.4rem);line-height:1;color:var(--yolk);text-shadow:0 0 32px rgba(255,194,75,.45)}
+.score-big small{font-size:.32em;color:var(--mist);font-weight:500}
+.rank{font-family:var(--dsp);font-size:1.3rem;margin-top:2px}
+.zscore{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--membrane)}
+.zscore:last-child{border-bottom:0}
+.medal{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;font-size:1.05rem;background:#120E2B;border:1px solid var(--membrane)}
+.fb{margin-top:8px;font-size:.9rem}
+.fb .hit{color:var(--jade)}
+.fb .miss{color:var(--mist)}
+.fb div{display:flex;gap:8px;align-items:flex-start;margin-bottom:3px}
+.chip{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:3px 9px;border-radius:20px;border:1px solid var(--membrane);color:var(--mist);margin:0 5px 5px 0}
+.stars{display:flex;gap:6px}
+.star{font-size:1.7rem;background:none;color:var(--membrane);padding:0;line-height:1}
+.star.on{color:var(--yolk)}
+.status{padding:11px 14px;border-radius:10px;font-size:.92rem;margin-top:12px}
+.status.ok{background:rgba(75,224,168,.12);border:1px solid var(--jade);color:#BFF6E2}
+.status.bad{background:rgba(255,93,143,.12);border:1px solid var(--rose);color:#FFD3E1}
+.status.pend{background:rgba(255,194,75,.1);border:1px solid var(--yolk);color:#FFE8BC}
+code.code{display:block;background:#0B0820;border:1px solid var(--membrane);border-radius:10px;padding:10px;font-family:var(--mono);font-size:.72rem;word-break:break-all;max-height:120px;overflow:auto;color:var(--mist);margin-top:8px}
+
+/* ---------- ครู ---------- */
+table.tt{width:100%;border-collapse:collapse;font-size:.86rem}
+table.tt th,table.tt td{border:1px solid var(--membrane);padding:6px 8px;text-align:left;vertical-align:top}
+table.tt th{background:#120E2B;color:var(--cyan);font-family:var(--dsp);font-weight:600;position:sticky;top:0}
+table.tt td.n{font-family:var(--mono);text-align:center}
+.scroll{overflow:auto;max-height:60vh;border:1px solid var(--membrane);border-radius:10px}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+details.key{border:1px solid var(--membrane);border-radius:10px;padding:10px 14px;margin-bottom:10px;background:var(--shell)}
+details.key summary{cursor:pointer;font-family:var(--dsp);font-weight:600;color:var(--yolk)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--membrane);color:var(--ink);padding:11px 20px;border-radius:30px;z-index:80;box-shadow:var(--shadow);font-family:var(--dsp);font-size:.92rem}
+.foot{text-align:center;color:var(--mist);font-size:.8rem;margin-top:26px}
+.foot a{color:var(--mist)}
+@media print{
+  body{background:#fff;color:#000}
+  .noprint{display:none!important}
+  .card,details.key{border:1px solid #999;background:#fff;color:#000;box-shadow:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* =====================================================================
+   GENOMON — ศึกนักเพาะพันธุ์แห่งยีน
+   แบบทดสอบกลางภาค วิทยาศาสตร์ ม.3 : หน่วยพันธุศาสตร์ (20 คะแนน / 45 นาที)
+   ออกแบบให้ ครูฉัตรวัฒก์ คำพวง
+   ---------------------------------------------------------------------
+   ★★★ ครูแก้ค่าได้ที่ CFG ด้านล่างนี้เท่านั้น ★★★
+   ===================================================================== */
+const CFG = {
+  /* วาง URL ของ Google Apps Script Web App ตรงนี้ (ดูคู่มือครู ขั้นตอนที่ 2)
+     ถ้าเว้นว่าง เกมยังเล่นได้ปกติ แต่จะเก็บคะแนนผ่าน "รหัสผลสอบ" แทน */
+  GAS_URL: "https://script.google.com/macros/s/AKfycbyrIQ65iSrJSfqCTg31kKk3akMy5g-5AbbIonpGw8j9R2DXGaSoU0eSqnkbVPw0HwOiQg/exec",
+
+  EXAM_MINUTES: 45,      // เวลาสอบทั้งหมด (นาที) เริ่มจับเมื่อกด "ออกเดินทาง"
+  ZONE_MINUTES: 8,       // เวลาแนะนำต่อด่าน (นาที) — เตือนแบบนุ่มนวล ไม่บังคับ
+  TOTAL_POINTS: 20,
+
+  AUTO_SCORE: true,      // true = ตรวจอัตโนมัติแล้วแจ้งคะแนนทันที / false = ส่งคำตอบเฉย ๆ ให้ครูตรวจเอง
+  REVEAL: "concepts",    // "concepts" = บอกว่าตอบครบประเด็นใดบ้าง | "score" = บอกแค่คะแนน | "none" = ไม่เปิดเผย
+  HINTS: true,           // เปิดปุ่ม "โค้ช" (คำใบ้เชิงวิธีคิด ไม่ใช่เฉลย) — ระบบจะบันทึกว่าใครใช้กี่ครั้ง
+  MIN_CHARS: 20,         // คำตอบสั้นกว่านี้จะไม่ได้คะแนนอัตโนมัติ
+
+  TEACHER_PIN: "3103",   // รหัสเข้าหน้าครู (เปลี่ยนได้) เข้าโดยเติม ?teacher=1 ท้าย URL
+  TEACHER_NAME: "ครูฉัตรวัฒก์ คำพวง",
+  EXAM_TITLE: "สอบกลางภาค วิทยาศาสตร์ ม.3 · หน่วยพันธุศาสตร์",
+  CLASSES: ["ม.3/1","ม.3/2","ม.3/3","ม.3/4","ม.3/5","ม.3/6","ม.3/7","ม.3/8"]
+};
+
+/* ---------------- สายพันธุ์เริ่มต้น 3 สาย × 3 ขั้นวิวัฒนาการ ---------------- */
+const LINES = [
+  { egg:"ไข่มรกต",  hue:"#4BE0A8", hue2:"#9BFFD0", type:"สายพฤกษ์",
+    names:["เจอร์มิ","ฟลอราจีน","ไกอาจีน"],
+    desc:"ฟักช้าแต่ทนทาน เหมาะกับนักคิดที่ค่อย ๆ ไตร่ตรอง" },
+  { egg:"ไข่ทับทิม", hue:"#FF8A4B", hue2:"#FFC24B", type:"สายเพลิง",
+    names:["พีโรจี","อิกนิจีน","โซลาจีน"],
+    desc:"พลังโจมตีสูง เหมาะกับนักคิดที่กล้าตอบกล้าอธิบาย" },
+  { egg:"ไข่ไพลิน", hue:"#5AD8FF", hue2:"#B6ECFF", type:"สายวารี",
+    names:["อควาจี","ไฮโดรจีน","โอเชียจีน"],
+    desc:"ยืดหยุ่นและช่างสังเกต เหมาะกับนักคิดที่อ่านข้อมูลละเอียด" }
+];
+
+/* =====================================================================
+   คลังข้อสอบ : 5 ด่าน × 3 ชุด (A/B/C) = 15 สถานการณ์
+   แต่ละสถานการณ์มี 2 คำถามอัตนัย ข้อละ 2 คะแนน → ด่านละ 4 คะแนน → รวม 20
+   ระบบสุ่มชุดของแต่ละด่านแยกกัน จากชื่อ-สกุล-ห้อง-เลขที่ ของนักเรียน
+   ⇒ เป็นไปได้ 3^5 = 243 ชุดข้อสอบ และนักเรียนคนเดิมจะได้ชุดเดิมเสมอ (กด F5 ไม่เปลี่ยน)
+
+   โครงสร้าง rubric:
+     need   = จับคำแบบไม่สนตัวพิมพ์ใหญ่เล็ก ; needCS = จับคำแบบสนตัวพิมพ์ (ใช้กับจีโนไทป์ SS/Ss/ss)
+     รูปแบบ [[a,b],[c]] หมายถึง  (มี a และ b)  หรือ  (มี c)
+   ===================================================================== */
+const BANK = [
+{ id:1, name:"หุบเขาฟักไข่", icon:"🥚", boss:"โครโมกอน", bossDesc:"ผู้พิทักษ์โครโมโซม",
+  intro:"ไข่ของเธอเพิ่งฟัก แต่ทางออกจากหุบเขาถูกขวางไว้ด้วยโครโมกอน มันจะไม่ยอมให้ผ่าน จนกว่าเธอจะพิสูจน์ว่าเข้าใจ 'รหัสชีวิต' ที่อยู่ในตัวเธอเอง",
+  variants:[
+  { code:"A", title:"รหัสลับในเปลือกไข่",
+    stim:`<p>โครโมกอนเปิดแผ่นศิลาจารึกจำนวนโครโมโซมของสิ่งมีชีวิต แล้วลบตัวเลขช่องหนึ่งทิ้ง</p>
+    <table class="data"><tr><th class="l">สิ่งมีชีวิต</th><th>เซลล์ร่างกาย</th><th>เซลล์สืบพันธุ์</th></tr>
+    <tr><td class="l">มนุษย์</td><td>46</td><td>23</td></tr>
+    <tr><td class="l">สุนัข</td><td>78</td><td>39</td></tr>
+    <tr><td class="l">ข้าว</td><td>24</td><td>12</td></tr>
+    <tr><td class="l">เจนม่อนสายพฤกษ์</td><td>24</td><td><b style="color:#FF5D8F">?</b></td></tr></table>
+    <div class="note"><b>เบาะแส:</b> เซลล์สืบพันธุ์ = เซลล์ไข่ และ อสุจิ · การปฏิสนธิ คือ การรวมกันของเซลล์สืบพันธุ์ 2 เซลล์</div>`,
+    qs:[
+    { p:"เติมตัวเลขในช่อง <b>?</b> พร้อมอธิบายความสัมพันธ์ระหว่างจำนวนโครโมโซมใน <b>เซลล์ร่างกาย</b> กับ <b>เซลล์สืบพันธุ์</b> และเหตุใดธรรมชาติจึงต้องเป็นเช่นนี้",
+      hint:"ตอบให้ครบ 3 ส่วน → (1) ตัวเลข (2) รูปแบบที่เห็นจากทุกแถวในตาราง (3) ผลที่จะเกิดขึ้น 'ตอนปฏิสนธิ' ถ้าไม่เป็นเช่นนี้",
+      model:"12 · เซลล์สืบพันธุ์มีโครโมโซมเป็นครึ่งหนึ่งของเซลล์ร่างกายเสมอ · เพราะเมื่อเซลล์ไข่ (12) รวมกับอสุจิ (12) ขณะปฏิสนธิ ลูกจะได้ 24 แท่ง เท่ากับพ่อแม่พอดี ทำให้จำนวนโครโมโซมของสปีชีส์คงที่ทุกรุ่น",
+      rub:[
+        {pt:1,d:"ตอบ 12",need:[["12"]]},
+        {pt:1,d:"ระบุว่าเซลล์สืบพันธุ์มีโครโมโซมเป็นครึ่งหนึ่ง",need:[["ครึ่ง"],["หาร2"],["แบ่งครึ่ง"],["ลดลงเหลือ"]]},
+        {pt:1,d:"อธิบายเหตุผลด้วยการปฏิสนธิ → จำนวนคงที่ทุกรุ่น",need:[["ปฏิสนธิ","เท่าเดิม"],["ปฏิสนธิ","คงที่"],["ปฏิสนธิ","24"],["รวมกัน","เท่าเดิม"],["ผสม","เท่าเดิม"],["รวมกัน","24"]]}
+      ]},
+    { p:"ถ้าเซลล์ไข่ให้โครโมโซม 12 แท่ง และอสุจิให้ 12 แท่ง ลูกที่ฟักออกมาจะมีกี่แท่ง? และถ้าการแบ่งเซลล์ผิดพลาดจนลูกได้ <b>25 แท่ง</b> จะส่งผลอย่างไร เรียกความผิดปกติแบบนี้ว่าอะไร (ยกตัวอย่างในมนุษย์ 1 ตัวอย่าง)",
+      hint:"คิดเป็นขั้น → (1) บวกเลขก่อน (2) 25 ผิดปกติตรงไหนเมื่อเทียบกับ 24 (3) ในมนุษย์ ถ้าโครโมโซมเกินมา 1 แท่ง เกิดโรคอะไร",
+      model:"24 แท่ง · การได้ 25 แท่ง คือ มีโครโมโซมเกินมา 1 แท่ง เกิดจากโครโมโซมคู่หนึ่งไม่แยกจากกันขณะแบ่งเซลล์สืบพันธุ์ ทำให้ลูกมีลักษณะผิดปกติ · ในมนุษย์ เช่น กลุ่มอาการดาวน์ (โครโมโซมคู่ที่ 21 เกินมา 1 แท่ง รวมเป็น 47 แท่ง)",
+      rub:[
+        {pt:1,d:"ตอบ 24 แท่ง",need:[["24"]]},
+        {pt:1,d:"อธิบายว่าเป็นความผิดปกติของจำนวนโครโมโซม (เกินมา 1 แท่ง / ไม่แยกตัว)",need:[["เกิน"],["ไม่แยก"],["ผิดปกติ","จำนวน"],["ผิดปกติ","โครโมโซม"]]},
+        {pt:1,d:"ยกตัวอย่างในมนุษย์ (ดาวน์ซินโดรม / คู่ที่ 21)",need:[["ดาวน์"],["21"],["47"]]}
+      ]}
+  ]},
+  { code:"B", title:"คำกล่าวอ้างของ ดร.เจนัส",
+    stim:`<p>โครโมกอนฉายภาพโครงสร้างภายในเซลล์ของเจนม่อน</p>
+    <p class="mono" style="color:#5AD8FF">เซลล์ → นิวเคลียส → โครโมโซม → DNA → ยีน</p>
+    <p>แล้วเปิดคลิปสัมภาษณ์ <b>ดร.เจนัส</b> นักวิจัยผู้อ้างว่า</p>
+    <div class="note" style="border-color:#FF5D8F"><b style="color:#FF5D8F">คำกล่าวอ้าง:</b> "เซลล์ผิวหนังกับเซลล์ประสาทของเจนม่อน<u>ตัวเดียวกัน</u> ทำหน้าที่ต่างกันอย่างสิ้นเชิง นั่นแสดงว่าเซลล์ทั้งสองมี DNA ต่างกัน"</div>`,
+    qs:[
+    { p:"เรียงลำดับโครงสร้างต่อไปนี้จาก <b>ใหญ่ไปเล็ก</b> : ยีน / DNA / โครโมโซม / นิวเคลียส แล้วอธิบายความสัมพันธ์ระหว่าง <b>ยีน – DNA – โครโมโซม</b> ว่าเกี่ยวข้องกันอย่างไร",
+      hint:"อย่าตอบแค่เรียงลำดับ! ต้องอธิบายด้วยว่า 'ยีนอยู่ตรงไหนของ DNA' และ 'DNA อยู่ตรงไหนของโครโมโซม'",
+      model:"นิวเคลียส > โครโมโซม > DNA > ยีน · โครโมโซมประกอบด้วยสาย DNA ที่ขดพันกับโปรตีนแน่น ๆ · ยีนคือช่วงหนึ่ง (ส่วนหนึ่ง) ของสาย DNA ที่ทำหน้าที่ควบคุมลักษณะทางพันธุกรรมหนึ่งลักษณะ",
+      rub:[
+        {pt:1,d:"เรียงลำดับครบถูกต้อง (นิวเคลียส-โครโมโซม-DNA-ยีน)",need:[["นิวเคลียส","โครโมโซม","dna","ยีน"],["นิวเคลียส","โครโมโซม","ดีเอ็นเอ","ยีน"]]},
+        {pt:1,d:"ยีนเป็นช่วง/ส่วนหนึ่งของ DNA",need:[["ยีน","ส่วนหนึ่ง"],["ยีน","ช่วง"],["ยีน","ท่อน"],["ยีนอยู่บน"],["ยีน","อยู่บนdna"]]},
+        {pt:1,d:"โครโมโซมประกอบด้วย DNA ที่ขดพัน",need:[["โครโมโซม","ประกอบด้วย"],["ขด"],["พัน"],["โครโมโซม","dnaอยู่"]]}
+      ]},
+    { p:"คำกล่าวอ้างของ ดร.เจนัส <b>ถูกต้องหรือไม่</b> จงประเมินพร้อมให้เหตุผลทางพันธุศาสตร์ และอธิบายว่า <b>อะไร</b> ทำให้เซลล์ 2 ชนิดในร่างกายเดียวกันทำหน้าที่ต่างกัน",
+      hint:"ประเมินก่อน (ถูก/ผิด) → แล้วค้านด้วยหลักการ 'ทุกเซลล์มาจากเซลล์เดียวกัน' → แล้วอธิบายว่าเซลล์ต่างกันเพราะ 'ใช้ยีน' ต่างกัน ไม่ใช่ 'มียีน' ต่างกัน",
+      model:"ไม่ถูกต้อง · เซลล์ทุกเซลล์ในร่างกายเกิดจากการแบ่งตัวของเซลล์เริ่มต้นเซลล์เดียว จึงมี DNA ชุดเดียวกันทั้งหมด · ที่ทำหน้าที่ต่างกันเพราะแต่ละเซลล์ 'แสดงออก' ของยีนไม่เหมือนกัน บางยีนถูกเปิดใช้งาน บางยีนถูกปิด",
+      rub:[
+        {pt:1,d:"ตัดสินว่าไม่ถูกต้อง",need:[["ไม่ถูก"],["ผิด"],["ไม่จริง"],["ไม่เห็นด้วย"],["เข้าใจผิด"]]},
+        {pt:1,d:"ทุกเซลล์ในร่างกายมี DNA ชุดเดียวกัน",need:[["เหมือนกัน"],["ชุดเดียวกัน"],["เดียวกัน"],["เท่ากัน"]]},
+        {pt:1,d:"ต่างกันเพราะการแสดงออกของยีน (เปิด/ปิดยีนต่างกัน)",need:[["แสดงออก"],["เปิด","ปิด"],["ทำงาน","ต่างกัน"],["ใช้ยีน","ต่างกัน"],["บางยีน"]]}
+      ]}
+  ]},
+  { code:"C", title:"แฝดแท้แห่งหุบเขา",
+    stim:`<p>เจนม่อนแฝดแท้ <b>มาโนะ</b> กับ <b>มานี</b> เกิดจากไข่ใบเดียวกัน ถูกแยกไปเลี้ยงคนละหมู่บ้านตั้งแต่แรกฟัก เป็นเวลา 3 ปี</p>
+    <table class="data"><tr><th class="l">ลักษณะ</th><th>มาโนะ (บ้านภูเขา)</th><th>มานี (บ้านทะเล)</th></tr>
+    <tr><td class="l">สีตา</td><td>เขียวมรกต</td><td>เขียวมรกต</td></tr>
+    <tr><td class="l">ลายเกล็ด</td><td>ลายก้นหอย</td><td>ลายก้นหอย</td></tr>
+    <tr><td class="l">หมู่เลือด</td><td>B</td><td>B</td></tr>
+    <tr><td class="l">น้ำหนัก</td><td>28 กก.</td><td>40 กก.</td></tr>
+    <tr><td class="l">ส่วนสูง</td><td>96 ซม.</td><td>101 ซม.</td></tr>
+    <tr><td class="l">พละกำลัง</td><td>ระดับ 9</td><td>ระดับ 4</td></tr></table>
+    <div class="note">บ้านภูเขามีอาหารน้อยแต่ต้องปีนป่ายทุกวัน · บ้านทะเลมีอาหารอุดมสมบูรณ์และสบาย</div>`,
+    qs:[
+    { p:"จำแนกว่าลักษณะใดบ้าง <b>ไม่เปลี่ยนแปลง</b> ตามสิ่งแวดล้อม และลักษณะใดบ้าง <b>เปลี่ยนแปลง</b> ตามสิ่งแวดล้อม พร้อมยกหลักฐานจากตารางมาสนับสนุน",
+      hint:"แฝดแท้ = ยีนเหมือนกัน 100% ดังนั้นอะไรก็ตามที่ 'ต่างกัน' ต้องไม่ได้เกิดจากยีน แล้วอะไรล่ะที่ทำให้ต่าง?",
+      model:"ไม่เปลี่ยน: สีตา ลายเกล็ด หมู่เลือด (ทั้งคู่เหมือนกันทุกประการแม้อยู่คนละที่) · เปลี่ยน: น้ำหนัก ส่วนสูง พละกำลัง (ต่างกันชัดเจน) · เพราะแฝดแท้มียีนเหมือนกันทุกอย่าง ความแตกต่างจึงต้องมาจากสิ่งแวดล้อม คือ อาหารและการใช้ร่างกาย",
+      rub:[
+        {pt:1,d:"ระบุกลุ่มที่ไม่เปลี่ยน (สีตา/ลายเกล็ด/หมู่เลือด)",need:[["สีตา","หมู่เลือด"],["สีตา","ลายเกล็ด"],["ลายเกล็ด","หมู่เลือด"]]},
+        {pt:1,d:"ระบุกลุ่มที่เปลี่ยน (น้ำหนัก/ส่วนสูง/พละกำลัง)",need:[["น้ำหนัก","ส่วนสูง"],["น้ำหนัก","พละ"],["ส่วนสูง","พละ"]]},
+        {pt:1,d:"อ้างหลักฐาน: แฝดแท้ยีนเหมือนกัน ความต่างจึงมาจากสิ่งแวดล้อม/อาหาร",need:[["ยีนเหมือน"],["พันธุกรรมเหมือน"],["อาหาร"],["สิ่งแวดล้อม"],["การเลี้ยงดู"]]}
+      ]},
+    { p:"จากกรณีนี้ จงสรุปเป็น <b>หลักการ</b> ว่าลักษณะของสิ่งมีชีวิตถูกกำหนดด้วยอะไรบ้าง แล้วยกตัวอย่างลักษณะใน <b>สัตว์เลี้ยงหรือคน</b> ที่ยืนยันหลักการนี้ มา 1 ตัวอย่าง พร้อมอธิบาย",
+      hint:"หลักการที่ต้องการคือคำตอบแบบ 'สองปัจจัย' ไม่ใช่ปัจจัยเดียว · ตัวอย่างที่ดีต้องบอกด้วยว่าปัจจัยไหนทำอะไร",
+      model:"ลักษณะของสิ่งมีชีวิตเกิดจากพันธุกรรมและสิ่งแวดล้อมร่วมกัน · ลักษณะบางอย่างถูกควบคุมด้วยยีนเป็นหลัก (สีตา หมู่เลือด) จึงไม่เปลี่ยน แต่บางลักษณะแม้ยีนจะกำหนดศักยภาพไว้ สิ่งแวดล้อมก็ทำให้แสดงออกต่างกันได้ · เช่น แมวสองตัวจากครอกเดียวกัน ตัวที่ได้อาหารดีและวิ่งเล่นมากจะแข็งแรงและตัวใหญ่กว่า",
+      rub:[
+        {pt:1,d:"สรุปหลักการว่าเกิดจากพันธุกรรม + สิ่งแวดล้อมร่วมกัน",need:[["พันธุกรรม","สิ่งแวดล้อม"],["ยีน","สิ่งแวดล้อม"]]},
+        {pt:1,d:"ระบุว่าบางลักษณะถูกกำหนดด้วยยีนจนสิ่งแวดล้อมเปลี่ยนไม่ได้",need:[["ยีนกำหนด"],["พันธุกรรมกำหนด"],["ควบคุมด้วยยีน"],["ควบคุมโดยยีน"],["เปลี่ยนไม่ได้"]]},
+        {pt:1,d:"ยกตัวอย่างที่มีปัจจัยสิ่งแวดล้อมชัดเจน (อาหาร/การฝึก/แสง/การเลี้ยงดู)",need:[["อาหาร"],["ฝึก"],["ออกกำลัง"],["แสง"],["เลี้ยงดู"],["โภชนาการ"]]}
+      ]}
+  ]}
+]},
+
+{ id:2, name:"ป่าเมนเดล", icon:"🌿", boss:"เมนเดลอส", bossDesc:"จอมปราชญ์แห่งถั่วลันเตา",
+  intro:"ลึกเข้าไปในป่า เมนเดลอสนั่งรออยู่บนกองสมุดบันทึกการผสมพันธุ์ 8 ปี มันไม่สนใจพลังโจมตี มันสนใจแค่ว่า... เธออ่านข้อมูลเป็นหรือเปล่า",
+  variants:[
+  { code:"A", title:"ศึกขนสั้น–ขนยาว",
+    stim:`<p>บันทึกการผสมพันธุ์เจนม่อนของเมนเดลอส (ลักษณะความยาวขน)</p>
+    <table class="data"><tr><th class="l">รุ่น</th><th class="l">การผสม</th><th class="l">ผลที่ได้</th></tr>
+    <tr><td class="l">P</td><td class="l">ขนสั้น (พันธุ์แท้) × ขนยาว (พันธุ์แท้)</td><td class="l">—</td></tr>
+    <tr><td class="l">F1</td><td class="l">—</td><td class="l">ขนสั้นทั้งหมด 100%</td></tr>
+    <tr><td class="l">F2</td><td class="l">F1 × F1</td><td class="l">ขนสั้น 123 ตัว : ขนยาว 41 ตัว</td></tr></table>
+    <div class="note">กำหนดให้ <b class="mono">S</b> = อัลลีลขนสั้น &nbsp;·&nbsp; <b class="mono">s</b> = อัลลีลขนยาว</div>`,
+    qs:[
+    { p:"ลักษณะใดเป็น <b>ลักษณะเด่น</b> ลักษณะใดเป็น <b>ลักษณะด้อย</b> จงระบุพร้อมยก <b>หลักฐานจากข้อมูล</b> อย่างน้อย 1 อย่างมาสนับสนุน",
+      hint:"หลักฐานที่ 'แรงที่สุด' อยู่ที่รุ่น F1 — ทำไมลักษณะหนึ่ง 'หายไป' ทั้งรุ่น แล้วโผล่กลับมาใน F2 ได้?",
+      model:"ขนสั้น = ลักษณะเด่น, ขนยาว = ลักษณะด้อย · หลักฐาน: ใน F1 ที่พ่อแม่เป็นพันธุ์แท้ทั้งคู่ ลูกออกมาขนสั้น 100% แสดงว่าอัลลีลขนสั้นข่มขนยาวไว้หมด และขนยาวไม่ได้หายไปจริงเพราะกลับมาปรากฏใน F2 อีกครั้ง",
+      rub:[
+        {pt:1,d:"ระบุขนสั้นเป็นลักษณะเด่น",need:[["ขนสั้น","เด่น"],["สั้น","เด่น"]]},
+        {pt:1,d:"ระบุขนยาวเป็นลักษณะด้อย",need:[["ขนยาว","ด้อย"],["ยาว","ด้อย"]]},
+        {pt:1,d:"ยกหลักฐานจาก F1 (100% ขนสั้น) หรือ F2 (ขนยาวกลับมา)",need:[["f1"],["รุ่นที่1"],["100"],["กลับมา"],["หายไป"],["ข่ม"]]}
+      ]},
+    { p:"เขียน <b>จีโนไทป์</b> ของรุ่น P และ F1 (ใช้ S/s) แล้วอธิบายด้วยตารางพันเนตต์ว่าเหตุใด F2 จึงได้อัตราส่วนประมาณ <b>3 : 1</b>",
+      hint:"F1 ทุกตัวเป็นพันธุ์ทาง เมื่อผสมกันเองจะสร้างเซลล์สืบพันธุ์ได้ 2 แบบ ลองจับคู่ทุกความเป็นไปได้ (4 ช่อง) แล้วนับ",
+      model:"P: SS × ss → F1: Ss ทุกตัว · F1 × F1 (Ss × Ss) ให้ลูก 4 แบบ = SS, Ss, Ss, ss · SS และ Ss (3 ส่วน) แสดงลักษณะขนสั้นเหมือนกัน เพราะมีอัลลีลเด่น S อยู่ ส่วน ss (1 ส่วน) เท่านั้นที่แสดงขนยาว จึงได้อัตราส่วนขนสั้น : ขนยาว = 3 : 1",
+      rub:[
+        {pt:1,d:"เขียนจีโนไทป์ถูก (SS × ss → Ss)",needCS:[["SS","ss"],["SS","Ss"]]},
+        {pt:1,d:"แสดงการรวมเซลล์สืบพันธุ์/ตารางพันเนตต์",need:[["พันเนตต์"],["punnett"],["ตาราง"],["เซลล์สืบพันธุ์"],["4ช่อง"],["4 แบบ"]]},
+        {pt:1,d:"อธิบายที่มาของ 3:1 (3 ส่วนมีอัลลีลเด่น : 1 ส่วนด้อยล้วน)",need:[["3:1"],["3ต่อ1"],["3ส่วน"],["1ส่วน"],["ss","ขนยาว"]]}
+      ]}
+  ]},
+  { code:"B", title:"ปริศนาพ่อแม่นิรนาม",
+    stim:`<p>เมนเดลอสวางบันทึกการผสมพันธุ์ 3 คู่ ลักษณะ "ความยาวหู" แต่ <b>ลบจีโนไทป์ของพ่อแม่ทิ้ง</b></p>
+    <table class="data"><tr><th>คู่</th><th class="l">ลักษณะพ่อแม่</th><th class="l">ลูก 100 ตัว</th></tr>
+    <tr><td>1</td><td class="l">หูยาว × หูยาว</td><td class="l">หูยาว 76 : หูสั้น 24</td></tr>
+    <tr><td>2</td><td class="l">หูยาว × หูสั้น</td><td class="l">หูยาว 100 : หูสั้น 0</td></tr>
+    <tr><td>3</td><td class="l">หูยาว × หูสั้น</td><td class="l">หูยาว 51 : หูสั้น 49</td></tr></table>
+    <div class="note">กำหนดให้ <b class="mono">L</b> = อัลลีลหูยาว (เด่น) &nbsp;·&nbsp; <b class="mono">l</b> = อัลลีลหูสั้น (ด้อย)</div>`,
+    qs:[
+    { p:"จง <b>อนุมานจีโนไทป์ของพ่อแม่</b> ในคู่ที่ 1 และ คู่ที่ 3 พร้อมให้เหตุผลว่าใช้ข้อมูลใดในตารางเป็นหลักฐาน",
+      hint:"ทำงานย้อนกลับ! ลูกหูสั้น (ด้อย) จะเกิดได้ต้องได้อัลลีลด้อยมาจากพ่อและแม่ฝ่ายละ 1 ตัวเสมอ · แล้วอัตราส่วนลูกล่ะ บอกอะไรได้บ้าง",
+      model:"คู่ที่ 1: Ll × Ll เพราะพ่อแม่หูยาวทั้งคู่แต่มีลูกหูสั้น (ll) ออกมา แสดงว่าทั้งคู่ต้องแอบมีอัลลีลด้อย l อยู่ และอัตราส่วน 76:24 ≈ 3:1 ก็ยืนยัน · คู่ที่ 3: Ll × ll เพราะได้ลูกหูยาว : หูสั้น ≈ 1:1 (51:49) ซึ่งเป็นผลของการผสมพันธุ์ทางกับพันธุ์แท้ด้อย",
+      rub:[
+        {pt:1,d:"คู่ที่ 1 = Ll × Ll (พันธุ์ทางทั้งคู่)",need:[["คู่ที่1","พันธุ์ทาง"],["คู่1","พันธุ์ทาง"]],needCS:[["Ll"]]},
+        {pt:1,d:"คู่ที่ 3 = Ll × ll",need:[["พันธุ์ทาง","หูสั้น"],["พันธุ์ทาง","พันธุ์แท้ด้อย"]],needCS:[["ll"]]},
+        {pt:1,d:"อ้างหลักฐานอัตราส่วน 3:1 และ/หรือ 1:1",need:[["3:1"],["1:1"],["76"],["51"],["ครึ่ง"],["50"]]}
+      ]},
+    { p:"นักเทรนเนอร์คนหนึ่งมีเจนม่อน <b>หูยาว</b> 1 ตัว แต่ไม่รู้ว่าเป็น <b>พันธุ์แท้หรือพันธุ์ทาง</b> จงออกแบบวิธีทดสอบ อธิบาย <b>ขั้นตอน</b> และ <b>วิธีแปลผล</b> ว่าผลออกมาแบบไหนแปลว่าอะไร",
+      hint:"นี่คือข้อ 'ออกแบบการทดลอง' → ต้องบอก (1) จะเอาไปผสมกับตัวไหน และทำไมต้องตัวนั้น (2) ถ้าผลออกแบบ A แปลว่า... (3) ถ้าผลออกแบบ B แปลว่า...",
+      model:"นำไปผสมกับเจนม่อนหูสั้น (ll ซึ่งเป็นพันธุ์แท้ลักษณะด้อยแน่นอน) แล้วดูลูกที่ออกมา (ผสมทดสอบ) · ถ้าลูกออกมาหูยาวทั้งหมด แสดงว่าตัวที่ทดสอบเป็นพันธุ์แท้ (LL) · แต่ถ้ามีลูกหูสั้นปรากฏออกมา (ประมาณ 1:1) แสดงว่าเป็นพันธุ์ทาง (Ll) เพราะมันส่งอัลลีลด้อย l ให้ลูกได้",
+      rub:[
+        {pt:1,d:"ออกแบบผสมกับตัวที่มีลักษณะด้อย (หูสั้น / ll)",need:[["หูสั้น","ผสม"],["ผสม","ด้อย"],["ผสมทดสอบ"]],needCS:[["ll"]]},
+        {pt:1,d:"แปลผล: ลูกหูยาวทั้งหมด → พันธุ์แท้",need:[["ทั้งหมด","พันธุ์แท้"],["ทุกตัว","พันธุ์แท้"],["100","พันธุ์แท้"]]},
+        {pt:1,d:"แปลผล: มีลูกหูสั้นปรากฏ → พันธุ์ทาง",need:[["หูสั้น","พันธุ์ทาง"],["ด้อย","พันธุ์ทาง"],["1:1","พันธุ์ทาง"]]}
+      ]}
+  ]},
+  { code:"C", title:"เกล็ดสามสี",
+    stim:`<p>นักวิจัยพบเจนม่อนสายพันธุ์ใหม่ในป่าลึก และบันทึกผลการผสมพันธุ์ไว้ดังนี้</p>
+    <table class="data"><tr><th class="l">การผสม</th><th class="l">ผลที่ได้</th></tr>
+    <tr><td class="l">เกล็ดแดง (พันธุ์แท้) × เกล็ดขาว (พันธุ์แท้)</td><td class="l">F1 : <b>เกล็ดชมพูทั้งหมด</b> (ไม่มีแดง ไม่มีขาวเลย)</td></tr>
+    <tr><td class="l">F1 × F1</td><td class="l">F2 : แดง 24 : ชมพู 51 : ขาว 25</td></tr></table>
+    <div class="note">กำหนดให้ <b class="mono">R</b> = อัลลีลสีแดง &nbsp;·&nbsp; <b class="mono">W</b> = อัลลีลสีขาว &nbsp;·&nbsp; <b>ข้อมูลนี้เป็นสถานการณ์ใหม่ที่เธออาจไม่เคยเจอ ให้ใช้ "หลักฐาน" ตัดสิน อย่าเดา</b></div>`,
+    qs:[
+    { p:"ผลที่ได้ในรุ่น F1 <b>แตกต่าง</b> จากการถ่ายทอดแบบเด่น-ด้อยสมบูรณ์ (แบบขนสั้น-ขนยาว) อย่างไร จงอธิบายพร้อมยกหลักฐานจากข้อมูลสนับสนุน",
+      hint:"ถ้าเป็นเด่น-ด้อยสมบูรณ์ F1 'ควรจะ' หน้าตาเป็นอย่างไร? แล้วของจริงเป็นอย่างไร? ความต่างนั้นแหละคือคำตอบ",
+      model:"ถ้าเป็นเด่น-ด้อยสมบูรณ์ ลูก F1 ต้องมีลักษณะเหมือนพ่อหรือแม่ฝ่ายเด่นฝ่ายใดฝ่ายหนึ่ง (แดงหรือขาว) แต่ผลจริงกลับได้สีชมพูซึ่งเป็นลักษณะกึ่งกลางระหว่างพ่อกับแม่ทั้งหมด · แสดงว่าอัลลีลทั้งสองข่มกันไม่สมบูรณ์ · หลักฐานเพิ่มเติมคือใน F2 สีแดงและสีขาวกลับมาปรากฏอีก แสดงว่าอัลลีลไม่ได้หายไปหรือผสมปนกันถาวร",
+      rub:[
+        {pt:1,d:"ระบุว่า F1 ได้ลักษณะกึ่งกลาง ไม่เหมือนพ่อหรือแม่",need:[["กึ่งกลาง"],["ตรงกลาง"],["ระหว่าง"],["ไม่เหมือนพ่อ"],["ผสมกัน"]]},
+        {pt:1,d:"สรุปว่าอัลลีลข่มกันไม่สมบูรณ์/ไม่มีตัวใดข่มได้หมด",need:[["ไม่สมบูรณ์"],["ข่มไม่หมด"],["ไม่ข่ม"],["ข่มกันไม่"],["ไม่มีอัลลีลใดเด่น"]]},
+        {pt:1,d:"ยกหลักฐานจาก F2 (แดง/ขาวกลับมา หรือ 1:2:1)",need:[["f2"],["1:2:1"],["กลับมา"],["24"],["51"],["25"]]}
+      ]},
+    { p:"จง <b>ทำนายผล</b> การผสม เกล็ดชมพู × เกล็ดชมพู ว่าจะได้ลูกลักษณะใดบ้าง ใน <b>อัตราส่วนเท่าใด</b> พร้อมแสดงเหตุผลหรือตารางพันเนตต์ประกอบ",
+      hint:"เขียนจีโนไทป์ของชมพูก่อน (มันต้องมีทั้ง R และ W) แล้วค่อยจับคู่ 4 ช่อง · อย่าลืมว่า RW = ชมพู",
+      model:"ชมพูมีจีโนไทป์ RW · RW × RW ให้ลูก 4 แบบ = RR, RW, RW, WW · RR = แดง, RW = ชมพู, WW = ขาว · จึงได้อัตราส่วน แดง : ชมพู : ขาว = 1 : 2 : 1 (25% : 50% : 25%) ซึ่งตรงกับข้อมูล F2 ที่พบจริง (24 : 51 : 25)",
+      rub:[
+        {pt:1,d:"ทำนายอัตราส่วน 1:2:1 (แดง:ชมพู:ขาว)",need:[["1:2:1"],["25","50","25"],["1ต่อ2ต่อ1"]]},
+        {pt:1,d:"เขียนจีโนไทป์/ใช้ตารางพันเนตต์",need:[["พันเนตต์"],["punnett"],["ตาราง"]],needCS:[["RW"],["RR"],["WW"]]},
+        {pt:1,d:"อธิบายว่าลูกที่ได้อัลลีลต่างกัน (RW) จะเป็นชมพู",need:[["ชมพู","ครึ่ง"],["ชมพู","50"],["ชมพู","2ส่วน"],["ต่างกัน","ชมพู"]]}
+      ]}
+  ]}
+]},
+
+{ id:3, name:"ถ้ำสายเลือด", icon:"🩸", boss:"พีดิกรีน", bossDesc:"เงาแห่งพงศาวลี",
+  intro:"ในถ้ำมีภาพวาดสายตระกูลยาวเหยียดบนผนัง พีดิกรีนกระซิบว่า 'บรรพบุรุษไม่เคยโกหก... ถ้าเธออ่านมันเป็น'",
+  variants:[
+  { code:"A", title:"พงศาวลีตาบอดสี",
+    stim:`<p>ผังพงศาวลีตระกูลหนึ่ง (<span class="mono" style="color:#5AD8FF">■/●</span> = ปกติ &nbsp; <span class="mono" style="color:#FF5D8F">■/●</span> = ตาบอดสี &nbsp; ■ = ชาย &nbsp; ● = หญิง)</p>
+    <svg viewBox="0 0 380 190" style="width:100%;max-width:380px;display:block;margin:8px auto">
+      <g fill="none" stroke="#A79FD6" stroke-width="1.6">
+        <line x1="70" y1="30" x2="120" y2="30"/><line x1="95" y1="30" x2="95" y2="55"/>
+        <line x1="95" y1="55" x2="230" y2="55"/><line x1="230" y1="55" x2="230" y2="72"/>
+        <line x1="205" y1="90" x2="265" y2="90"/><line x1="235" y1="90" x2="235" y2="115"/>
+        <line x1="120" y1="115" x2="330" y2="115"/>
+        <line x1="120" y1="115" x2="120" y2="132"/><line x1="190" y1="115" x2="190" y2="132"/>
+        <line x1="260" y1="115" x2="260" y2="132"/><line x1="330" y1="115" x2="330" y2="132"/>
+      </g>
+      <rect x="58" y="18" width="24" height="24" fill="#FF5D8F"/><text x="70" y="14" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">ปู่</text>
+      <circle cx="120" cy="30" r="12" fill="#5AD8FF"/><text x="120" y="14" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">ย่า</text>
+      <rect x="193" y="78" width="24" height="24" fill="#5AD8FF"/><text x="205" y="74" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">พ่อ</text>
+      <circle cx="265" cy="90" r="12" fill="#5AD8FF" stroke="#FF5D8F" stroke-width="3"/><text x="265" y="74" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">แม่*</text>
+      <rect x="108" y="132" width="24" height="24" fill="#FF5D8F"/><text x="120" y="172" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">พี่ชาย</text>
+      <rect x="178" y="132" width="24" height="24" fill="#5AD8FF"/><text x="190" y="172" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">น้องชาย</text>
+      <circle cx="260" cy="144" r="12" fill="#5AD8FF"/><text x="260" y="172" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">พี่สาว</text>
+      <circle cx="330" cy="144" r="12" fill="#5AD8FF"/><text x="330" y="172" fill="#A79FD6" font-size="9" text-anchor="middle" font-family="monospace">น้องสาว</text>
+    </svg>
+    <div class="note"><b>ข้อมูล:</b> ตาบอดสีเกิดจาก<b>ยีนด้อยบนโครโมโซม X</b> · แม่* (วงกลมขอบชมพู) เป็นลูกสาวของปู่ที่ตาบอดสี และตัวเธอเองสายตาปกติ</div>`,
+    qs:[
+    { p:"จากพงศาวลี ผู้ที่ <b>แสดงอาการ</b> ตาบอดสีล้วนเป็น <b>เพศชาย</b> จงอธิบายว่าเพราะเหตุใด โดยใช้หลักการยีนบนโครโมโซมเพศ (อธิบายทั้งกรณีเพศชายและเพศหญิง)",
+      hint:"เปรียบเทียบ 'จำนวนโครโมโซม X' ของชายกับหญิง · ถ้ามี X แค่แท่งเดียว แล้วแท่งนั้นมียีนด้อย จะมีอะไรมาช่วยข่มไหม?",
+      model:"เพศชายมีโครโมโซมเพศ XY คือ มี X เพียงแท่งเดียว ถ้า X แท่งนั้นมียีนตาบอดสีอยู่ ก็ไม่มี X อีกแท่งที่มีอัลลีลปกติมาข่มไว้ จึงแสดงอาการทันที · ส่วนเพศหญิงมี XX ต้องได้รับยีนด้อยครบทั้งสองแท่งจึงจะตาบอดสี ถ้าได้เพียงแท่งเดียวจะไม่แสดงอาการ แต่เป็นพาหะ (เช่น แม่* ในผัง)",
+      rub:[
+        {pt:1,d:"ชายมี X เพียงแท่งเดียว (XY)",need:[["แท่งเดียว"],["1แท่ง"],["หนึ่งแท่ง"],["ตัวเดียว"]],needCS:[["XY"]]},
+        {pt:1,d:"ไม่มีอัลลีลเด่นอีกแท่งมาข่ม จึงแสดงอาการทันที",need:[["ไม่มี","ข่ม"],["แสดงอาการ","ทันที"],["ไม่มีอัลลีลเด่น"],["ยีนด้อย","แสดง"]]},
+        {pt:1,d:"หญิง XX ต้องได้ยีนด้อยทั้งสองแท่ง มิฉะนั้นเป็นพาหะ",need:[["พาหะ"],["ทั้งสองแท่ง"],["2แท่ง"],["สองข้าง"]],needCS:[["XX"]]}
+      ]},
+    { p:"ถ้า <b>แม่* เป็นพาหะ</b> แต่งงานกับชายสายตาปกติ จงหา (ก) ถ้าลูกที่เกิดมาเป็น <b>เพศชาย</b> โอกาสที่เขาจะตาบอดสีเป็นเท่าใด (ข) โอกาสที่ <b>ลูกคนหนึ่ง (ยังไม่ทราบเพศ)</b> จะตาบอดสีเป็นเท่าใด — แสดงวิธีคิดหรือตารางพันเนตต์",
+      hint:"ระวังกับดัก! สองคำถามนี้ตอบไม่เท่ากัน · เขียนแกมีตของแม่ (X ปกติ, X ตาบอดสี) และของพ่อ (X ปกติ, Y) แล้วจับคู่ให้ครบ 4 ช่อง",
+      model:"แม่พาหะสร้างไข่ได้ 2 แบบ (X ปกติ / X ตาบอดสี) พ่อสร้างอสุจิได้ 2 แบบ (X ปกติ / Y) · ลูกที่เป็นไปได้ 4 แบบ: หญิงปกติ, หญิงพาหะ, ชายปกติ, ชายตาบอดสี · (ก) เฉพาะในกลุ่มลูกชาย มี 1 ใน 2 ที่ตาบอดสี = 50% · (ข) เมื่อนับลูกทั้งหมด มี 1 ใน 4 = 25%",
+      rub:[
+        {pt:1,d:"(ก) ลูกชาย = 50% (1 ใน 2)",need:[["50"],["1/2"],["ครึ่ง"]]},
+        {pt:1,d:"(ข) ลูกทั้งหมด = 25% (1 ใน 4)",need:[["25"],["1/4"],["1ใน4"]]},
+        {pt:1,d:"แสดงวิธีคิด/ตารางพันเนตต์/แกมีต",need:[["พันเนตต์"],["punnett"],["ตาราง"],["4แบบ"],["เซลล์สืบพันธุ์"]],needCS:[["XY"],["XX"]]}
+      ]}
+  ]},
+  { code:"B", title:"ฮีโมฟีเลียในตระกูลนักเทรนเนอร์",
+    stim:`<p>ครอบครัวนักเทรนเนอร์ครอบครัวหนึ่ง</p>
+    <table class="data"><tr><th class="l">สมาชิก</th><th class="l">อาการ</th></tr>
+    <tr><td class="l">พ่อ</td><td class="l">สุขภาพดี ไม่เคยเลือดออกผิดปกติ</td></tr>
+    <tr><td class="l">แม่</td><td class="l">สุขภาพดี ไม่เคยเลือดออกผิดปกติ</td></tr>
+    <tr><td class="l">ลูกชายคนโต</td><td class="l"><b style="color:#FF5D8F">เป็นฮีโมฟีเลีย</b> (เลือดออกแล้วหยุดยาก)</td></tr>
+    <tr><td class="l">ลูกสาว 2 คน</td><td class="l">ปกติทั้งคู่</td></tr>
+    <tr><td class="l">"ตา" (พ่อของแม่)</td><td class="l"><b style="color:#FF5D8F">เสียชีวิตจากเลือดไหลไม่หยุด</b></td></tr>
+    <tr><td class="l">ปู่ ย่า ยาย</td><td class="l">ปกติทั้งหมด</td></tr></table>
+    <div class="note"><b>ข้อมูล:</b> ฮีโมฟีเลียเกิดจาก<b>ยีนด้อยบนโครโมโซม X</b> ผู้ป่วยขาดสารที่ทำให้เลือดแข็งตัว</div>`,
+    qs:[
+    { p:"พ่อและแม่ปกติทั้งคู่ แต่ลูกชายกลับเป็นโรค จง <b>อธิบายว่าเป็นไปได้อย่างไร</b> ระบุว่า <b>แม่มีจีโนไทป์แบบใด</b> และใช้ข้อมูลใดในตารางเป็น <b>หลักฐาน</b> ยืนยัน",
+      hint:"ลูกชายได้ X มาจากใคร? ได้ Y มาจากใคร? · แล้ว 'ตา' ที่เป็นโรค เกี่ยวข้องกับแม่อย่างไร (แม่ได้ X มาจากตาแน่นอน)",
+      model:"แม่เป็นพาหะ คือ มี X ที่มียีนปกติ 1 แท่ง และ X ที่มียีนฮีโมฟีเลีย 1 แท่ง จึงไม่แสดงอาการเพราะยีนปกติข่มไว้ · ลูกชายได้รับโครโมโซม X มาจากแม่เพียงแท่งเดียว (และได้ Y จากพ่อ) ถ้าบังเอิญได้ X แท่งที่มียีนด้อย ก็จะเป็นโรคทันที · หลักฐาน: 'ตา' ซึ่งเป็นพ่อของแม่เป็นโรค ดังนั้นแม่ต้องได้รับ X ที่มียีนด้อยจากตามาแน่นอน",
+      rub:[
+        {pt:1,d:"ระบุว่าแม่เป็นพาหะ",need:[["พาหะ"]]},
+        {pt:1,d:"ลูกชายได้ X จากแม่ และ Y จากพ่อ",need:[["จากแม่","พ่อ"],["x","จากแม่"],["จากแม่","y"],["ได้รับ","แม่"]]},
+        {pt:1,d:"ใช้หลักฐานว่า 'ตา' เป็นโรค ⇒ แม่ต้องรับยีนด้อยจากตา",need:[["ตา"],["พ่อของแม่"],["ปู่ทวด"]]}
+      ]},
+    { p:"คู่สมรสคู่หนึ่งกังวลว่าลูกจะเป็นฮีโมฟีเลีย ถ้าเธอเป็น <b>ที่ปรึกษาทางพันธุศาสตร์</b> จะให้คำแนะนำอย่างไร และเพราะเหตุใดจึง <b>ไม่สามารถรับประกัน 100%</b> ได้ว่าลูกจะไม่เป็นโรค",
+      hint:"สองส่วน → (1) แนะนำอะไรที่ 'ทำได้จริง' ก่อนมีลูก (2) อธิบายว่าทำไมพันธุศาสตร์บอกได้แค่ 'โอกาส' ไม่ใช่ 'ความแน่นอน'",
+      model:"แนะนำให้ทั้งคู่ไปตรวจคัดกรอง/ปรึกษาทางพันธุกรรม เพื่อดูว่าฝ่ายหญิงเป็นพาหะหรือไม่ และศึกษาประวัติโรคในครอบครัว · แต่รับประกันไม่ได้ เพราะการที่อสุจิตัวใดจะปฏิสนธิกับไข่ใบใดเป็นเรื่องของโอกาส (ความน่าจะเป็น) · การตั้งครรภ์แต่ละครั้งเป็นเหตุการณ์อิสระต่อกัน ครั้งก่อนได้ผลอย่างไรไม่มีผลต่อครั้งถัดไป",
+      rub:[
+        {pt:1,d:"แนะนำให้ตรวจ/คัดกรอง/ปรึกษาทางพันธุกรรม",need:[["ตรวจ"],["ปรึกษา"],["คัดกรอง"],["ประวัติครอบครัว"]]},
+        {pt:1,d:"อธิบายว่าเป็นเพียงความน่าจะเป็น/โอกาส ไม่ใช่ความแน่นอน",need:[["โอกาส"],["น่าจะเป็น"],["สุ่ม"],["ไม่แน่นอน"],["%"]]},
+        {pt:1,d:"การปฏิสนธิแต่ละครั้งเป็นอิสระต่อกัน",need:[["อิสระ"],["แต่ละครั้ง"],["ทุกครั้ง"],["ครั้งก่อน"],["ไม่เกี่ยวกัน"]]}
+      ]}
+  ]},
+  { code:"C", title:"ความเชื่อเรื่องเพศของลูก",
+    stim:`<p>ในหมู่บ้านนักเทรนเนอร์ ป้าคนหนึ่งพูดกับเพื่อนบ้านว่า</p>
+    <div class="note" style="border-color:#FF5D8F"><b style="color:#FF5D8F">คำกล่าวอ้าง:</b> "บ้านนั้นมีลูกสาว 4 คนติดกัน ก็เพราะ<u>แม่</u>เป็นคนกำหนดเพศลูกเองนั่นแหละ ถ้าอยากได้ลูกชายต้องไปแก้ที่ฝ่ายหญิง"</div>
+    <p>ข้อมูลประกอบ:</p>
+    <ul><li>เพศหญิงมีโครโมโซมเพศ <b class="mono">XX</b> · เพศชายมีโครโมโซมเพศ <b class="mono">XY</b></li>
+    <li>สถิติทารกแรกเกิดของโรงพยาบาลประจำจังหวัดใน 1 ปี : ชาย <b>508</b> คน หญิง <b>492</b> คน (รวม 1,000 คน)</li></ul>`,
+    qs:[
+    { p:"จง <b>ประเมิน</b> คำกล่าวอ้างของป้าว่าถูกต้องหรือไม่ พร้อมอธิบายด้วยหลักการโครโมโซมเพศ และระบุให้ชัดเจนว่า <b>ใคร</b> เป็นผู้กำหนดเพศของลูก เพราะเหตุใด",
+      hint:"ถามตัวเองว่า 'เซลล์สืบพันธุ์ของแม่มีกี่แบบ' และ 'ของพ่อมีกี่แบบ' · ฝ่ายที่สร้างได้ 2 แบบต่างหากที่เป็นตัวตัดสิน",
+      model:"ไม่ถูกต้อง · แม่มีโครโมโซม XX ไข่ทุกใบจึงมีโครโมโซม X เหมือนกันหมด แม่จึงให้ X ได้อย่างเดียวเสมอ · ส่วนพ่อมี XY สร้างอสุจิได้ 2 แบบ คือ อสุจิที่มี X และอสุจิที่มี Y · ถ้าอสุจิ X ผสมกับไข่ ได้ XX เป็นลูกสาว ถ้าอสุจิ Y ผสม ได้ XY เป็นลูกชาย · ดังนั้นพ่อ (ฝ่ายชาย) ต่างหากที่เป็นผู้กำหนดเพศของลูก",
+      rub:[
+        {pt:1,d:"ตัดสินว่าคำกล่าวอ้างไม่ถูกต้อง",need:[["ไม่ถูก"],["ผิด"],["ไม่จริง"],["ไม่เห็นด้วย"],["เข้าใจผิด"]]},
+        {pt:1,d:"พ่อเป็นผู้กำหนดเพศ เพราะสร้างอสุจิได้ 2 แบบ (X และ Y)",need:[["พ่อ","กำหนด"],["อสุจิ","2แบบ"],["สเปิร์ม","2แบบ"],["ชาย","กำหนด"],["อสุจิ","y"]]},
+        {pt:1,d:"แม่ให้โครโมโซม X ได้อย่างเดียว (ไข่มีแต่ X)",need:[["ไข่","x"],["แม่","xเสมอ"],["แม่","xอย่างเดียว"],["มีแต่x"],["xเหมือนกันหมด"]]}
+      ]},
+    { p:"ใช้ <b>ตารางพันเนตต์</b> แสดงโอกาสการเกิดลูกชาย-ลูกสาว แล้วอธิบายว่าเหตุใดครอบครัวหนึ่งจึงมีลูกสาวติดกัน 4 คนได้ <b>ทั้งที่โอกาสเป็น 50 : 50</b> (ใช้สถิติทารกแรกเกิดประกอบการอธิบาย)",
+      hint:"คิดเหมือนโยนเหรียญ 4 ครั้ง ออกหัวหมด — เป็นไปได้ไหม? แล้ว 50% ที่ว่านั้นจริง ๆ แล้วมันจริงเมื่อไร?",
+      model:"XX × XY ให้ลูก 4 แบบ = XX, XX, XY, XY จึงได้โอกาสลูกสาว : ลูกชาย = 1 : 1 หรือ 50% : 50% · แต่การปฏิสนธิแต่ละครั้งเป็นเหตุการณ์สุ่มและเป็นอิสระต่อกัน เหมือนการโยนเหรียญที่อาจออกหัวติดกัน 4 ครั้งได้ · ค่า 50% เป็นค่าเฉลี่ยที่จะเห็นชัดเมื่อมีจำนวนมาก ๆ เท่านั้น ดังที่สถิติทารก 1,000 คนได้ชาย 508 : หญิง 492 ซึ่งใกล้เคียง 50:50 มาก",
+      rub:[
+        {pt:1,d:"ระบุโอกาส 50:50 (1:1) จากตารางพันเนตต์ XX × XY",need:[["50"],["1:1"],["ครึ่ง"],["เท่ากัน"],["พันเนตต์"]],needCS:[["XX","XY"]]},
+        {pt:1,d:"อธิบายว่าการปฏิสนธิแต่ละครั้งเป็นเหตุการณ์สุ่ม/อิสระ",need:[["สุ่ม"],["อิสระ"],["บังเอิญ"],["โอกาส","แต่ละครั้ง"],["เหรียญ"]]},
+        {pt:1,d:"อ้างสถิติจำนวนมากว่าเข้าใกล้ 50:50 (508:492)",need:[["508"],["492"],["จำนวนมาก"],["ค่าเฉลี่ย"],["1000"],["1,000"]]}
+      ]}
+  ]}
+]},
+
+{ id:4, name:"หอคอยกลายพันธุ์", icon:"☢️", boss:"มิวเทเทอร์", bossDesc:"จ้าวแห่งความผิดพลาด",
+  intro:"หอคอยสีม่วงเรืองแสง มิวเทเทอร์คือเจนม่อนที่เคยกลายพันธุ์จนควบคุมตัวเองไม่ได้ 'ข้อผิดพลาดเล็ก ๆ ในรหัสชีวิต' มันคำราม 'เปลี่ยนทุกอย่างได้... เธอเข้าใจมันดีพอหรือยัง?'",
+  variants:[
+  { code:"A", title:"กราฟที่นักข่าวอ่านผิด",
+    stim:`<p>ข้อมูลอัตราการเกิดกลุ่มอาการดาวน์ จำแนกตามอายุมารดา</p>
+    <table class="data"><tr><th>อายุมารดา (ปี)</th><th>20</th><th>25</th><th>30</th><th>35</th><th>40</th><th>45</th></tr>
+    <tr><th class="l">อัตราการเกิด (ต่อการเกิด 1,000 ราย)</th><td>0.6</td><td>0.8</td><td>1.2</td><td>3.5</td><td>11.5</td><td>38.0</td></tr></table>
+    <div class="note"><b>ข้อมูล:</b> กลุ่มอาการดาวน์เกิดจากโครโมโซมคู่ที่ 21 เกินมา 1 แท่ง (มี 47 แท่ง) ซึ่งเกิดจากโครโมโซมคู่นี้<b>ไม่แยกจากกัน</b>ขณะแบ่งเซลล์สืบพันธุ์</div>
+    <div class="note" style="border-color:#FF5D8F"><b style="color:#FF5D8F">พาดหัวข่าว:</b> "ผลวิจัยชี้ชัด! ข้อมูลนี้พิสูจน์แล้วว่า <u>อายุของแม่คือสาเหตุเดียว</u> ของกลุ่มอาการดาวน์"</div>`,
+    qs:[
+    { p:"จง <b>บรรยายแนวโน้ม</b> ของข้อมูลในตาราง และเปรียบเทียบว่าอัตราการเกิดที่อายุ 45 ปี เป็น <b>ประมาณกี่เท่า</b> ของอายุ 25 ปี (แสดงวิธีคิด)",
+      hint:"บรรยายแนวโน้มต้องมี 2 ชั้น → (1) ทิศทาง (เพิ่มหรือลด) (2) 'ลักษณะการเพิ่ม' คงที่หรือพุ่งพรวด · แล้วค่อยหารเลข",
+      model:"เมื่ออายุมารดาเพิ่มขึ้น อัตราการเกิดกลุ่มอาการดาวน์ก็เพิ่มขึ้น และไม่ได้เพิ่มแบบคงที่ แต่เพิ่มขึ้นอย่างรวดเร็วแบบก้าวกระโดดหลังอายุประมาณ 35 ปีขึ้นไป · เปรียบเทียบ 38.0 ÷ 0.8 ≈ 47.5 เท่า (ประมาณ 47-48 เท่า)",
+      rub:[
+        {pt:1,d:"ระบุแนวโน้ม: อายุมากขึ้น อัตราสูงขึ้น",need:[["อายุ","เพิ่ม"],["มากขึ้น","สูงขึ้น"],["แปรผันตรง"],["อายุ","มาก","สูง"]]},
+        {pt:1,d:"ระบุว่าเพิ่มแบบก้าวกระโดด/ไม่คงที่ (โดยเฉพาะหลัง 35 ปี)",need:[["35"],["ก้าวกระโดด"],["รวดเร็ว"],["พุ่ง"],["ชัน"],["ไม่คงที่"],["ทวีคูณ"]]},
+        {pt:1,d:"คำนวณได้ประมาณ 47-48 เท่า",need:[["47"],["48"],["46"],["เกือบ50"],["ประมาณ50"]]}
+      ]},
+    { p:"จง <b>ประเมินพาดหัวข่าว</b> ว่าสมเหตุสมผลหรือไม่ พร้อมให้เหตุผล และอธิบาย <b>สาเหตุที่แท้จริงในระดับโครโมโซม</b> ของกลุ่มอาการดาวน์",
+      hint:"กับดักคลาสสิก: ข้อมูลบอกแค่ว่า 'สองสิ่งนี้สัมพันธ์กัน' ไม่ได้แปลว่า 'สิ่งหนึ่งเป็นสาเหตุเดียว' · สังเกตว่าแม่อายุ 20 ปี ก็ยังมีโอกาสอยู่ (0.6) ⇒ อะไรบอกอะไรได้บ้าง?",
+      model:"ไม่สมเหตุสมผล เพราะเป็นการสรุปเกินข้อมูล · ข้อมูลแสดงเพียง 'ความสัมพันธ์' ระหว่างอายุกับอัตราการเกิด ไม่ได้พิสูจน์ว่าอายุเป็นสาเหตุเดียว และเห็นชัดว่าแม่อายุ 20-25 ปีก็ยังพบเด็กกลุ่มอาการดาวน์ได้ (0.6-0.8 ต่อ 1,000) · สาเหตุที่แท้จริงคือ โครโมโซมคู่ที่ 21 ไม่แยกออกจากกันขณะแบ่งเซลล์สืบพันธุ์ ทำให้ลูกได้โครโมโซมคู่ที่ 21 เกินมา 1 แท่ง (รวม 47 แท่ง)",
+      rub:[
+        {pt:1,d:"ตัดสินว่าไม่สมเหตุสมผล/สรุปเกินข้อมูล",need:[["ไม่สมเหตุ"],["ไม่ถูก"],["ผิด"],["สรุปเกิน"],["ไม่สามารถสรุป"],["ไม่เห็นด้วย"]]},
+        {pt:1,d:"ให้เหตุผล: ความสัมพันธ์ ≠ สาเหตุเดียว / แม่อายุน้อยก็ยังพบได้",need:[["ไม่ใช่สาเหตุเดียว"],["ความสัมพันธ์","สาเหตุ"],["อายุน้อย","ยังพบ"],["อายุน้อย","ก็เกิด"],["0.6"],["ปัจจัยอื่น"]]},
+        {pt:1,d:"อธิบายสาเหตุระดับโครโมโซม (คู่ 21 ไม่แยกตัว / เกิน 1 แท่ง / 47)",need:[["21"],["47"],["ไม่แยก"],["เกินมา"]]}
+      ]}
+  ]},
+  { code:"B", title:"ธาลัสซีเมีย: ภัยเงียบของไทย",
+    stim:`<p>โรคธาลัสซีเมียเป็นโรคโลหิตจางที่ถ่ายทอดทางพันธุกรรม ควบคุมด้วย <b>ยีนด้อยบนออโตโซม</b></p>
+    <ul><li>คนไทยเป็น <b>พาหะ</b> ของธาลัสซีเมียประมาณ 30–40% ของประชากร</li>
+    <li>คู่สมรสคู่หนึ่ง สามีและภรรยา <b>เป็นพาหะทั้งคู่</b> แต่ทั้งสองแข็งแรงดี ไม่มีอาการใด ๆ</li></ul>
+    <div class="note">กำหนดให้ <b class="mono">T</b> = อัลลีลปกติ (เด่น) &nbsp;·&nbsp; <b class="mono">t</b> = อัลลีลธาลัสซีเมีย (ด้อย) &nbsp;·&nbsp; พาหะมีจีโนไทป์ <b class="mono">Tt</b></div>`,
+    qs:[
+    { p:"ใช้ตารางพันเนตต์หา <b>โอกาส (เป็นร้อยละ)</b> ที่ลูกของคู่นี้จะ (ก) <b>เป็นโรค</b> (ข) <b>เป็นพาหะ</b> (ค) <b>ปกติสมบูรณ์</b> พร้อมระบุจีโนไทป์ของแต่ละกรณี",
+      hint:"Tt × Tt → เขียนแกมีตของแต่ละฝ่าย (T กับ t) แล้วจับคู่ให้ครบ 4 ช่อง อย่าลืมว่า Tt มี 2 ช่อง",
+      model:"Tt × Tt ให้ลูก 4 แบบ = TT, Tt, Tt, tt · (ก) เป็นโรค tt = 1 ใน 4 = 25% · (ข) เป็นพาหะ Tt = 2 ใน 4 = 50% · (ค) ปกติสมบูรณ์ TT = 1 ใน 4 = 25%",
+      rub:[
+        {pt:1,d:"เป็นโรค 25% (tt)",need:[["25"],["1/4"],["1ใน4"]],needCS:[["tt"]]},
+        {pt:1,d:"เป็นพาหะ 50% (Tt)",need:[["50"],["2/4"],["ครึ่ง"],["2ใน4"]],needCS:[["Tt"]]},
+        {pt:1,d:"ปกติ 25% (TT)",need:[["ปกติ","25"]],needCS:[["TT"]]}
+      ]},
+    { p:"เหตุใด <b>พาหะ</b> จึงไม่แสดงอาการของโรค แต่ยังมี <b>ความสำคัญ</b> อย่างมากต่อการวางแผนครอบครัว? และในฐานะนักเรียน จงเสนอ <b>แนวทางระดับโรงเรียนหรือชุมชน</b> อย่างน้อย 1 แนวทางเพื่อลดจำนวนผู้ป่วยรายใหม่ พร้อมเหตุผล",
+      hint:"3 ส่วน → (1) ทำไมพาหะสบายดี (คิดจากจีโนไทป์ Tt) (2) แล้วพาหะอันตรายตรงไหน (ถ้าเจอพาหะด้วยกัน) (3) แล้วจะทำอะไรได้บ้างในชุมชน",
+      model:"พาหะมีจีโนไทป์ Tt คือมีอัลลีลปกติ T อยู่ 1 ตัว ซึ่งข่มอัลลีลด้อย t ไว้ ร่างกายจึงยังสร้างเม็ดเลือดได้ตามปกติ ไม่แสดงอาการ · แต่พาหะสามารถถ่ายทอดอัลลีล t ให้ลูกได้ ถ้าพาหะแต่งงานกับพาหะด้วยกัน ลูกมีโอกาสเป็นโรคถึง 25% · แนวทาง เช่น รณรงค์ให้ตรวจเลือดคัดกรองพาหะก่อนแต่งงานหรือก่อนมีบุตร และให้ความรู้เรื่องธาลัสซีเมียในโรงเรียน เพราะทำให้คู่เสี่ยงรู้ตัวและวางแผนได้ล่วงหน้า",
+      rub:[
+        {pt:1,d:"อธิบายว่ามีอัลลีลเด่นปกติข่มไว้ จึงไม่แสดงอาการ",need:[["ข่ม"],["ยีนปกติ"],["อัลลีลเด่น"],["เด่น","ปกติ"],["ยังสร้าง"]]},
+        {pt:1,d:"พาหะถ่ายทอดยีนด้อยสู่ลูกได้ / พาหะ×พาหะ เสี่ยง 25%",need:[["ถ่ายทอด"],["พาหะ","พาหะ"],["เสี่ยง"],["25"],["ส่งต่อ"]]},
+        {pt:1,d:"เสนอแนวทางที่ทำได้จริง (ตรวจเลือด/คัดกรอง/ให้ความรู้/ปรึกษาก่อนแต่งงาน)",need:[["ตรวจเลือด"],["คัดกรอง"],["ก่อนแต่งงาน"],["ให้ความรู้"],["รณรงค์"],["ปรึกษา"]]}
+      ]}
+  ]},
+  { code:"C", title:"การทดลองรังสีที่พังไม่เป็นท่า",
+    stim:`<p>นักวิจัยฝึกหัดคนหนึ่งอยากรู้ว่า "รังสีทำให้เกิดการกลายพันธุ์จริงหรือไม่" จึงทำการทดลองดังนี้</p>
+    <ol><li>นำไข่เจนม่อน <b>10 ฟอง</b> ไปฉายรังสีนาน 5 นาที</li>
+    <li>รอให้ฟักออกมา แล้วนับจำนวนตัวที่มีลักษณะผิดปกติ</li>
+    <li>ผลที่ได้: ผิดปกติ <b>3 ตัว จาก 10 ตัว (30%)</b></li>
+    <li>สรุปว่า: <b style="color:#FF5D8F">"รังสีทำให้เกิดการกลายพันธุ์ 30%"</b></li></ol>
+    <div class="note"><b>ข้อมูลเพิ่มเติมจากตำรา:</b> เจนม่อนในธรรมชาติ (ไม่โดนรังสี) มีอัตราการกลายพันธุ์ตามธรรมชาติอยู่แล้วประมาณ <b>5%</b></div>`,
+    qs:[
+    { p:"จงระบุ <b>ตัวแปรต้น</b> และ <b>ตัวแปรตาม</b> ของการทดลองนี้ แล้วบอกว่าการทดลองนี้ <b>ขาดสิ่งสำคัญอะไรไป</b> จึงทำให้สรุปผลไม่ได้",
+      hint:"ถามตัวเองว่า 'ถ้าไม่ฉายรังสีเลย จะมีลูกผิดปกติกี่ตัว?' — ถ้าไม่มีตัวเทียบ เราจะรู้ได้อย่างไรว่า 3 ตัวนั้นเกิดจากรังสีจริง",
+      model:"ตัวแปรต้น = การได้รับรังสี (ฉาย/ไม่ฉาย หรือปริมาณรังสี) · ตัวแปรตาม = จำนวนหรือร้อยละของลูกที่กลายพันธุ์/ผิดปกติ · สิ่งที่ขาดคือ กลุ่มควบคุม (ไข่อีกชุดหนึ่งที่ไม่ได้ฉายรังสี เลี้ยงในสภาพเดียวกัน) ทำให้ไม่มีตัวเปรียบเทียบว่าถ้าไม่ฉายรังสีจะผิดปกติกี่ตัว จึงสรุปไม่ได้ว่ารังสีเป็นสาเหตุ",
+      rub:[
+        {pt:1,d:"ตัวแปรต้น = รังสี",need:[["ตัวแปรต้น","รังสี"],["ต้น","รังสี"],["อิสระ","รังสี"]]},
+        {pt:1,d:"ตัวแปรตาม = จำนวน/ร้อยละของตัวที่กลายพันธุ์หรือผิดปกติ",need:[["ตัวแปรตาม","กลายพันธุ์"],["ตัวแปรตาม","ผิดปกติ"],["ตาม","จำนวน"],["ตาม","ร้อยละ"]]},
+        {pt:1,d:"ขาดกลุ่มควบคุม (ไข่ที่ไม่ได้ฉายรังสี)",need:[["กลุ่มควบคุม"],["ไม่ได้ฉาย","เปรียบเทียบ"],["ไม่มีตัวเทียบ"],["control"],["กลุ่มเปรียบเทียบ"]]}
+      ]},
+    { p:"จง <b>ประเมินความน่าเชื่อถือ</b> ของข้อสรุป และเสนอวิธี <b>ปรับปรุงการทดลองอย่างน้อย 2 ข้อ</b> พร้อมอธิบายว่าการปรับปรุงแต่ละข้อทำให้ผลน่าเชื่อถือขึ้นอย่างไร",
+      hint:"อย่าตอบแค่ 'ควรทำให้ดีขึ้น' · แต่ละข้อที่เสนอ ต้องตอบให้ได้ว่า 'มันแก้จุดอ่อนข้อไหน'",
+      model:"ข้อสรุปยังเชื่อถือไม่ได้ เพราะไม่มีกลุ่มควบคุม กลุ่มตัวอย่างน้อยเพียง 10 ฟอง และทำเพียงครั้งเดียว · ปรับปรุงข้อ 1: เพิ่มกลุ่มควบคุมที่ไม่ฉายรังสีในสภาพแวดล้อมเดียวกัน เพื่อเปรียบเทียบว่าอัตราผิดปกติต่างจากธรรมชาติ (5%) จริงหรือไม่ · ปรับปรุงข้อ 2: เพิ่มจำนวนไข่ให้มากขึ้นและทำซ้ำหลายครั้ง เพื่อลดผลของความบังเอิญและทำให้ผลมีความน่าเชื่อถือทางสถิติ · (อาจเพิ่ม: ควบคุมตัวแปรอื่นให้เหมือนกัน เช่น อุณหภูมิ อาหาร)",
+      rub:[
+        {pt:1,d:"ประเมินว่ายังเชื่อถือไม่ได้ พร้อมเหตุผล (ตัวอย่างน้อย/ครั้งเดียว/ไม่มีกลุ่มควบคุม)",need:[["เชื่อถือไม่ได้"],["ยังสรุปไม่ได้"],["ไม่น่าเชื่อถือ"],["น้อยเกินไป"],["ครั้งเดียว"],["10ฟอง"]]},
+        {pt:1,d:"เสนอเพิ่มกลุ่มควบคุม",need:[["กลุ่มควบคุม"],["ไม่ฉาย","เปรียบเทียบ"],["กลุ่มเปรียบเทียบ"]]},
+        {pt:1,d:"เสนอเพิ่มจำนวนตัวอย่าง/ทำซ้ำ/ควบคุมตัวแปรอื่น",need:[["เพิ่มจำนวน"],["ทำซ้ำ"],["หลายครั้ง"],["มากขึ้น"],["ควบคุมตัวแปร"]]}
+      ]}
+  ]}
+]},
+
+{ id:5, name:"เวทีแชมป์เปี้ยน", icon:"🏆", boss:"ไบโอเร็กซ์", bossDesc:"แชมป์เปี้ยนแห่งเทคโนโลยีชีวภาพ",
+  intro:"ด่านสุดท้าย ไบโอเร็กซ์ยืนรออยู่กลางเวที มันไม่ถามว่าเธอ 'จำ' อะไรได้ มันถามว่า... เธอจะ 'ตัดสินใจ' อย่างไร เมื่อความรู้ทางพันธุศาสตร์ต้องใช้กับชีวิตจริง",
+  variants:[
+  { code:"A", title:"ข้าวสีทอง",
+    stim:`<p><b>ข้าวสีทอง (Golden Rice)</b> คือข้าวที่ถูกดัดแปรพันธุกรรมโดยการใส่ยีนที่ควบคุมการสร้าง <b>เบต้าแคโรทีน</b> (สารตั้งต้นของวิตามินเอ) เข้าไปในเมล็ดข้าว ทำให้เมล็ดมีสีเหลืองทอง</p>
+    <table class="data"><tr><th class="l">ฝ่ายสนับสนุน</th><th class="l">ฝ่ายคัดค้าน</th></tr>
+    <tr><td class="l">เด็กหลายแสนคนทั่วโลกตาบอดทุกปีจากการขาดวิตามินเอ · ข้าวเป็นอาหารหลักที่คนจนเข้าถึงได้</td>
+    <td class="l">กังวลผลกระทบระยะยาวต่อสุขภาพและระบบนิเวศ · เสี่ยงต่อการผูกขาดเมล็ดพันธุ์โดยบริษัทใหญ่</td></tr></table>`,
+    qs:[
+    { p:"จงอธิบาย <b>หลักการทางพันธุศาสตร์</b> ที่ทำให้ข้าวธรรมดากลายเป็นข้าวสีทองได้ (ยีนเข้ามาเกี่ยวข้องอย่างไร และเหตุใดลักษณะใหม่นี้จึงถ่ายทอดไปยังรุ่นลูกได้)",
+      hint:"ลำดับเหตุการณ์ → ใส่ยีนเข้าไปที่ไหน → ยีนสั่งให้สร้างอะไร → ทำไมรุ่นลูกถึงยังมีลักษณะนี้อยู่",
+      model:"เป็นการตัดต่อ/ถ่ายโอนยีนจากสิ่งมีชีวิตอื่นเข้าไปแทรกใน DNA ของข้าว · ยีนนั้นทำหน้าที่ควบคุมการสร้างเอนไซม์/โปรตีนที่ใช้สังเคราะห์เบต้าแคโรทีน เมื่อยีนแสดงออก เมล็ดข้าวจึงสร้างเบต้าแคโรทีนได้และมีสีเหลืองทอง · เนื่องจากยีนใหม่ถูกแทรกอยู่ใน DNA ของข้าวแล้ว จึงถูกถ่ายทอดไปยังรุ่นลูกผ่านเมล็ดพันธุ์ได้เหมือนยีนอื่น ๆ",
+      rub:[
+        {pt:1,d:"ระบุการใส่/ตัดต่อ/ถ่ายโอนยีนเข้าไปใน DNA ของข้าว",need:[["ใส่ยีน"],["ตัดต่อ"],["ถ่ายโอน"],["ย้ายยีน"],["แทรก"],["เพิ่มยีน"],["ดัดแปร"]]},
+        {pt:1,d:"ยีนควบคุมการสร้างโปรตีน/เอนไซม์ที่สร้างเบต้าแคโรทีน",need:[["เบต้าแคโรทีน"],["เอนไซม์"],["โปรตีน"],["สังเคราะห์"]]},
+        {pt:1,d:"ยีนใหม่อยู่ใน DNA จึงแสดงออกและถ่ายทอดสู่รุ่นลูกได้",need:[["แสดงออก"],["ถ่ายทอด","รุ่น"],["ถ่ายทอด","ลูก"],["ลักษณะใหม่"],["เมล็ดพันธุ์","ต่อ"]]}
+      ]},
+    { p:"ถ้าเธอเป็นคณะกรรมการพิจารณา จะ <b>ตัดสินใจ</b> ให้ประเทศไทยอนุญาตปลูกข้าวสีทองหรือไม่ — ระบุ <b>จุดยืน</b> ให้ชัดเจน พร้อม <b>เหตุผลสนับสนุนอย่างน้อย 2 ข้อ</b> ที่อ้างอิงข้อมูล และระบุ <b>ข้อกังวลของฝ่ายตรงข้าม 1 ข้อ</b> ที่เธอยอมรับว่ามีน้ำหนัก พร้อมบอกว่าจะจัดการกับข้อกังวลนั้นอย่างไร",
+      hint:"คำตอบที่ได้คะแนนเต็ม ไม่ใช่คำตอบที่ 'ถูกฝ่าย' แต่คือคำตอบที่ (1) มีจุดยืนชัด (2) มีเหตุผลอ้างข้อมูล (3) กล้ายอมรับข้อดีของอีกฝ่าย",
+      model:"(ตอบได้ทั้งเห็นด้วยและไม่เห็นด้วย ขอเพียงให้เหตุผลหนักแน่น) ตัวอย่าง: เห็นด้วยให้ปลูกภายใต้การควบคุม เพราะ (1) ช่วยลดปัญหาการขาดวิตามินเอที่ทำให้เด็กตาบอดหลายแสนคนต่อปี (2) ข้าวเป็นอาหารหลักที่คนรายได้น้อยเข้าถึงอยู่แล้ว จึงกระจายประโยชน์ได้กว้าง · แต่ยอมรับว่าข้อกังวลเรื่องการผูกขาดเมล็ดพันธุ์มีน้ำหนักจริง จึงควรกำหนดให้เกษตรกรเก็บเมล็ดพันธุ์ไว้ปลูกต่อได้ และมีหน่วยงานรัฐกำกับราคา พร้อมทดสอบความปลอดภัยและผลต่อระบบนิเวศก่อนปลูกเชิงพาณิชย์",
+      rub:[
+        {pt:1,d:"ระบุจุดยืนชัดเจน (ควร/ไม่ควรอนุญาต)",need:[["ควร"],["ไม่ควร"],["เห็นด้วย"],["ไม่เห็นด้วย"],["สนับสนุน"],["คัดค้าน"],["อนุญาต"]]},
+        {pt:1,d:"ให้เหตุผลอ้างอิงข้อมูลในสถานการณ์",need:[["วิตามินเอ"],["ตาบอด"],["ทุพโภชนาการ"],["อาหารหลัก"],["สุขภาพ"],["คนจน"]]},
+        {pt:1,d:"ระบุ/ยอมรับข้อกังวลของอีกฝ่าย (ระบบนิเวศ/ผูกขาด/ความปลอดภัย)",need:[["ระบบนิเวศ"],["ผูกขาด"],["ความปลอดภัย"],["ระยะยาว"],["เมล็ดพันธุ์"]]}
+      ]}
+  ]},
+  { code:"B", title:"กองทัพโคลน",
+    stim:`<p>ฟาร์มสองแห่งเลี้ยงเจนม่อนด้วยวิธีต่างกัน แล้วเกิดโรคระบาดจากเชื้อราชนิดใหม่พร้อมกัน</p>
+    <table class="data"><tr><th class="l">รายการ</th><th class="l">ฟาร์ม A "แชมป์โคลน"</th><th class="l">ฟาร์ม B "ธรรมชาติ"</th></tr>
+    <tr><td class="l">วิธีเพาะพันธุ์</td><td class="l">โคลนนิ่งจากตัวที่เก่งที่สุด 1 ตัว</td><td class="l">ผสมพันธุ์หลากหลายสายพันธุ์</td></tr>
+    <tr><td class="l">พันธุกรรมของประชากร</td><td class="l">เหมือนกันทุกตัว 100%</td><td class="l">แตกต่างหลากหลาย</td></tr>
+    <tr><td class="l">จำนวนก่อนระบาด</td><td class="l">10,000 ตัว</td><td class="l">10,000 ตัว</td></tr>
+    <tr><td class="l"><b>ตายจากโรคระบาด</b></td><td class="l"><b style="color:#FF5D8F">9,850 ตัว (98.5%)</b></td><td class="l"><b style="color:#4BE0A8">2,000 ตัว (20%)</b></td></tr></table>`,
+    qs:[
+    { p:"เหตุใดประชากรที่เป็น <b>โคลนทั้งหมด</b> จึงเสียหายหนักกว่ามาก จงอธิบายโดยใช้แนวคิด <b>ความหลากหลายทางพันธุกรรม</b> ประกอบ",
+      hint:"ถ้าทุกตัวมียีนเหมือนกันเป๊ะ แปลว่าทุกตัวมี 'จุดแข็ง' เหมือนกัน... แล้ว 'จุดอ่อน' ล่ะ?",
+      model:"เจนม่อนโคลนมีพันธุกรรมเหมือนกันทุกตัว 100% จึงมีความต้านทานโรคเท่ากันหมด และมีจุดอ่อนต่อเชื้อราชนิดนี้เหมือนกันหมด เมื่อเชื้อทำลายตัวหนึ่งได้ ก็ทำลายได้ทั้งประชากร · ส่วนฟาร์ม B มีความหลากหลายทางพันธุกรรม จึงมีบางตัวที่บังเอิญมียีนต้านทานเชื้อรานี้ ตัวเหล่านั้นรอดชีวิตและสืบพันธุ์ต่อได้ ประชากรจึงไม่สูญพันธุ์",
+      rub:[
+        {pt:1,d:"โคลนมียีน/พันธุกรรมเหมือนกันทุกตัว ไม่หลากหลาย",need:[["เหมือนกัน"],["ยีนเหมือน"],["พันธุกรรมเหมือน"],["ไม่หลากหลาย"],["100"]]},
+        {pt:1,d:"จึงมีจุดอ่อนต่อโรคเหมือนกันหมด → ติดโรคและตายทั้งหมด",need:[["จุดอ่อน"],["อ่อนแอ"],["ติดโรค","ทั้งหมด"],["ตายทั้งหมด"],["ไม่มีตัวใดต้านทาน"],["ต้านทานไม่ได้"]]},
+        {pt:1,d:"ประชากรหลากหลายมีบางตัวมียีนต้านทานจึงรอด",need:[["ต้านทาน"],["บางตัว","รอด"],["หลากหลาย","รอด"],["ยีนต้าน"],["ภูมิ"]]}
+      ]},
+    { p:"ในฐานะ <b>หัวหน้าฟาร์ม A</b> จงเสนอแนวทางการเพาะพันธุ์ที่รักษาความหลากหลายทางพันธุกรรม <b>อย่างน้อย 2 แนวทาง</b> พร้อมอธิบายว่าแต่ละแนวทาง <b>ช่วยลดความเสี่ยงได้อย่างไร</b>",
+      hint:"แนวทางที่ดีต้องบอกได้ว่า 'ทำแล้วยีนในฝูงหลากหลายขึ้นอย่างไร' และ 'พอเกิดโรคใหม่แล้วช่วยยังไง'",
+      model:"แนวทางที่ 1: เลิกพึ่งการโคลนอย่างเดียว หันมาผสมพันธุ์กับเจนม่อนจากสายพันธุ์อื่นหรือฟาร์มอื่น เพื่อนำอัลลีลใหม่ ๆ เข้าสู่ฝูง ทำให้มีโอกาสมีตัวที่ต้านทานโรคชนิดใหม่ · แนวทางที่ 2: เก็บรักษาสายพันธุ์สำรองหลาย ๆ สาย (ทำนองธนาคารพันธุกรรม) และไม่เลี้ยงรวมกันทั้งหมดในที่เดียว เพื่อว่าถ้าโรคระบาดทำลายฝูงหนึ่ง ก็ยังมีฝูงอื่นและยีนอื่นเหลืออยู่ ไม่สูญพันธุ์ทั้งหมด",
+      rub:[
+        {pt:1,d:"แนวทาง: ผสมพันธุ์กับสายพันธุ์อื่น/เลิกโคลนอย่างเดียว",need:[["ผสม","สายพันธุ์อื่น"],["ผสมข้าม"],["ไม่โคลน"],["เลิกโคลน"],["หลายสายพันธุ์"],["นำเข้า","สายพันธุ์"]]},
+        {pt:1,d:"แนวทาง: อนุรักษ์/สำรองสายพันธุ์หลากหลาย หรือแยกฝูง",need:[["ธนาคาร"],["อนุรักษ์"],["สำรอง"],["เก็บ","สายพันธุ์"],["แยกฝูง"],["หลายฟาร์ม"]]},
+        {pt:1,d:"อธิบายผลว่าช่วยเพิ่มโอกาสมีตัวต้านทาน/ลดความเสี่ยงสูญพันธุ์",need:[["ต้านทาน"],["ลดความเสี่ยง"],["ไม่สูญพันธุ์"],["รอด"],["หลากหลาย","เพิ่ม"]]}
+      ]}
+  ]},
+  { code:"C", title:"นักเพาะพันธุ์ผู้ทะเยอทะยาน",
+    stim:`<p>ข้อมูลสุขภาพสุนัขจากโรงพยาบาลสัตว์แห่งหนึ่ง</p>
+    <table class="data"><tr><th class="l">กลุ่ม</th><th class="l">วิธีเพาะพันธุ์</th><th>พบโรคทางพันธุกรรม</th></tr>
+    <tr><td class="l">สุนัขพันธุ์แท้ 3 สายพันธุ์</td><td class="l">ผสมในสายเลือดใกล้ชิด (พ่อ-ลูก, พี่-น้อง) เพื่อรักษาลักษณะสวยงามของสายพันธุ์</td><td><b style="color:#FF5D8F">42%</b></td></tr>
+    <tr><td class="l">สุนัขพันทาง</td><td class="l">ผสมข้ามสายพันธุ์ตามธรรมชาติ</td><td><b style="color:#4BE0A8">9%</b></td></tr></table>
+    <div class="note">โรคที่พบบ่อยในกลุ่มพันธุ์แท้ เช่น ข้อสะโพกเสื่อม หายใจลำบาก หัวใจผิดปกติ · โรคเหล่านี้ส่วนใหญ่ควบคุมด้วย<b>ยีนด้อย</b></div>`,
+    qs:[
+    { p:"เหตุใดการผสมพันธุ์ใน <b>สายเลือดใกล้ชิด</b> จึงเพิ่มโอกาสที่ลูกจะแสดงลักษณะด้อยที่เป็นโรค จงอธิบายโดยใช้แนวคิดเรื่อง <b>จีโนไทป์และพาหะ</b>",
+      hint:"ลักษณะด้อยจะแสดงออกได้ก็ต่อเมื่อได้อัลลีลด้อยมา 'กี่ตัว' · แล้วพ่อกับแม่ที่เป็นญาติกัน มีโอกาสเป็นพาหะของยีนด้อย 'ตัวเดียวกัน' มากหรือน้อย?",
+      model:"ลักษณะด้อยจะแสดงออกได้ก็ต่อเมื่อลูกได้รับอัลลีลด้อยครบทั้งสองตัว (จากพ่อ 1 และจากแม่ 1) · สุนัขที่เป็นญาติใกล้ชิดกันสืบเชื้อสายมาจากบรรพบุรุษเดียวกัน จึงมีโอกาสสูงที่จะเป็นพาหะของยีนด้อยตัวเดียวกัน · เมื่อพาหะสองตัวนี้ผสมกัน โอกาสที่ลูกจะได้อัลลีลด้อยครบคู่จึงสูงขึ้นมาก ลูกจึงแสดงอาการของโรคมากกว่าสุนัขพันทางที่ยีนหลากหลายกว่า",
+      rub:[
+        {pt:1,d:"ญาติใกล้ชิดมีโอกาสเป็นพาหะของยีนด้อยตัวเดียวกัน",need:[["พาหะ","เหมือนกัน"],["ยีนด้อย","เหมือนกัน"],["ยีนเดียวกัน"],["บรรพบุรุษเดียวกัน"],["ยีนคล้าย"]]},
+        {pt:1,d:"ลูกมีโอกาสได้อัลลีลด้อยครบทั้งสองตัวสูงขึ้น",need:[["ทั้งสอง"],["ครบคู่"],["สองตัว"],["ด้อย","คู่"],["พันธุ์แท้ด้อย"]]},
+        {pt:1,d:"จึงแสดงอาการของโรค (ลักษณะด้อยปรากฏ)",need:[["แสดงอาการ"],["ปรากฏ"],["แสดงออก"],["เป็นโรค","มากขึ้น"]]}
+      ]},
+    { p:"ถ้าเธอเป็นนักเพาะพันธุ์ จงเสนอ <b>เกณฑ์การเพาะพันธุ์อย่างรับผิดชอบ อย่างน้อย 2 ข้อ</b> และอธิบายว่าเหตุใดการคัดเลือกพันธุ์โดยยึด <b>ความสวยงามเพียงอย่างเดียว</b> จึงเป็นปัญหาเชิงจริยธรรม",
+      hint:"เกณฑ์ต้องเป็นสิ่งที่ 'ทำได้จริง' และตอบจุดอ่อนในตาราง · ส่วนคำถามจริยธรรม ให้คิดว่า 'ใครได้ประโยชน์' และ 'ใครรับผลเสีย'",
+      model:"เกณฑ์ 1: หลีกเลี่ยงการผสมระหว่างสัตว์ที่เป็นญาติใกล้ชิด และจัดทำบันทึกสายพันธุ์เพื่อคำนวณความใกล้ชิดทางสายเลือด · เกณฑ์ 2: ตรวจคัดกรองยีนโรคก่อนตัดสินใจผสม และไม่นำสัตว์ที่มีโรคทางพันธุกรรมรุนแรงมาเป็นพ่อพันธุ์แม่พันธุ์ แม้จะสวยงามก็ตาม · การยึดความสวยงามอย่างเดียวเป็นปัญหาเชิงจริยธรรม เพราะเป็นการทำให้สัตว์ต้องเกิดมาพร้อมโรคและความเจ็บปวดตลอดชีวิต เพียงเพื่อสนองความพึงพอใจของมนุษย์ ทั้งที่สัตว์ไม่ได้เลือกเอง",
+      rub:[
+        {pt:1,d:"เกณฑ์: หลีกเลี่ยงผสมในสายเลือดใกล้ชิด / บันทึกสายพันธุ์",need:[["หลีกเลี่ยง","ญาติ"],["ไม่ผสม","ญาติ"],["ไม่ผสม","สายเลือด"],["บันทึกสายพันธุ์"],["ผสมข้าม"]]},
+        {pt:1,d:"เกณฑ์: ตรวจคัดกรองยีนโรค / คำนึงถึงสุขภาพก่อนความสวยงาม",need:[["ตรวจ","ยีน"],["คัดกรอง"],["สุขภาพ"],["ตรวจโรค"]]},
+        {pt:1,d:"อธิบายประเด็นจริยธรรม (สัตว์ทรมาน/มนุษย์ได้ประโยชน์ฝ่ายเดียว)",need:[["ทรมาน"],["เจ็บปวด"],["สวัสดิภาพ"],["เห็นแก่ตัว"],["มนุษย์","ประโยชน์"],["ไม่เป็นธรรม"],["คุณภาพชีวิต"]]}
+      ]}
+  ]}
+]}
+];
+/* =====================================================================
+   ENGINE
+   ===================================================================== */
+const $ = (s,r)=> (r||document).querySelector(s);
+const app = $("#app");
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const pad = n => String(n).padStart(2,"0");
+const mmss = s => pad(Math.floor(Math.max(0,s)/60))+":"+pad(Math.floor(Math.max(0,s)%60));
+const uid = () => "g"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* ---- ที่เก็บข้อมูลชั่วคราว: ใช้ localStorage ถ้าใช้ได้ ไม่งั้นเก็บในหน่วยความจำ ---- */
+const MEM = {};
+const store = {
+  get(k){ try{ const v = window.localStorage.getItem(k); return v===null? (k in MEM ? MEM[k] : null) : v; }catch(e){ return k in MEM ? MEM[k] : null; } },
+  set(k,v){ MEM[k]=v; try{ window.localStorage.setItem(k,v); }catch(e){} },
+  del(k){ delete MEM[k]; try{ window.localStorage.removeItem(k); }catch(e){} }
+};
+
+/* ---- ตัวสุ่มแบบมีเมล็ด: นักเรียนคนเดิม = ชุดข้อสอบเดิมเสมอ ---- */
+function hashStr(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
+function mulberry32(a){ return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+function keyOf(st){ return [st.first,st.last,st.cls,st.no].map(x=>String(x||"").trim()).join("|"); }
+function makePaper(st){
+  const rnd = mulberry32(hashStr(keyOf(st)));
+  return BANK.map(z => Math.floor(rnd()*z.variants.length));
+}
+function paperCode(paper){ return paper.map((v,i)=>BANK[i].variants[v].code).join("-"); }
+function starterOf(st){ return Math.floor(mulberry32(hashStr("egg:"+keyOf(st)))()*3); }
+
+/* ---- ตรวจคำตอบอัตนัยด้วยเกณฑ์เชิงมโนทัศน์ (rubric) ---- */
+const THDIG = {"๐":"0","๑":"1","๒":"2","๓":"3","๔":"4","๕":"5","๖":"6","๗":"7","๘":"8","๙":"9"};
+function normBase(s){
+  return String(s||"")
+    .replace(/[๐-๙]/g, c=>THDIG[c])
+    .replace(/[\s\u200b\u00a0]+/g,"")
+    .replace(/[.,!?;"'`“”‘’()\[\]]/g,"")
+    .replace(/ๆ/g,"");
+}
+const normLC = s => normBase(s).toLowerCase();
+function groupHit(hay, group){ return group.every(tok => hay.indexOf(tok)>=0); }
+function conceptHit(lc, cs, c){
+  if(c.need && c.need.some(g=>groupHit(lc,g.map(t=>t.toLowerCase())))) return true;
+  if(c.needCS && c.needCS.some(g=>groupHit(cs,g))) return true;
+  return false;
+}
+function scoreOne(text, q){
+  const lc = normLC(text), cs = normBase(text);
+  const raw = String(text||"").trim();
+  if(raw.length < CFG.MIN_CHARS) return { s:0, hits:[], short:true, len:raw.length };
+  let s=0; const hits=[];
+  q.rub.forEach((c,i)=>{ if(conceptHit(lc,cs,c)){ hits.push(i); s+=c.pt; } });
+  return { s: Math.min(s,2), hits, short:false, len:raw.length };
+}
+
+/* ---- สถานะเกม ---- */
+let S = null;
+let TICK = null;
+const SKEY = "genomon_v1";
+
+function newState(st){
+  const paper = makePaper(st);
+  return {
+    v:1, id:uid(), st, paper, code:paperCode(paper), starter:starterOf(st),
+    ans:{}, pasted:{}, hints:{}, zdone:[0,0,0,0,0], ztime:[0,0,0,0,0],
+    zone:0, screen:"map", startAt:null, deadline:null, zoneEnter:null,
+    blur:0, submitted:false, result:null, comment:"", fun:0, diff:0, sent:"idle", timedOut:false
+  };
+}
+function save(){ if(S) store.set(SKEY, JSON.stringify(S)); }
+function load(){ try{ const r=store.get(SKEY); return r? JSON.parse(r):null; }catch(e){ return null; } }
+
+/* ---- คำนวณคะแนน ---- */
+function grade(){
+  const zones = BANK.map((z,zi)=>{
+    const v = z.variants[S.paper[zi]];
+    const qs = v.qs.map((q,qi)=>{
+      const key = "z"+zi+"q"+qi;
+      const text = (S.ans[key]||"");
+      const r = CFG.AUTO_SCORE ? scoreOne(text,q) : {s:0,hits:[],short:false,len:text.trim().length};
+      return { key, qi, text, score:r.s, hits:r.hits, len:r.len, short:r.short,
+               review: (r.s<2 && r.len>=70) || (r.s===2 && r.len<45),
+               pasted: !!S.pasted[key] };
+    });
+    const sc = qs.reduce((a,b)=>a+b.score,0);
+    return { zi, zone:z.name, boss:z.boss, variant:v.code, title:v.title, score:sc, max:4,
+             sec:S.ztime[zi]||0, hints:(S.hints["z"+zi+"q0"]?1:0)+(S.hints["z"+zi+"q1"]?1:0), qs };
+  });
+  const total = zones.reduce((a,b)=>a+b.score,0);
+  const pct = Math.round(total/CFG.TOTAL_POINTS*100);
+  let rank="นักเพาะพันธุ์ฝึกหัด", stage=1, medal="🥉";
+  if(total>=17){ rank="ปรมาจารย์แห่งยีน"; stage=3; medal="👑"; }
+  else if(total>=13){ rank="นักเพาะพันธุ์ระดับทอง"; stage=3; medal="🥇"; }
+  else if(total>=9){ rank="นักเพาะพันธุ์ระดับเงิน"; stage=2; medal="🥈"; }
+  else if(total>=5){ rank="นักเพาะพันธุ์ระดับทองแดง"; stage=2; medal="🥉"; }
+  return { zones, total, pct, rank, stage, medal };
+}
+function medalOf(s){ return s===4?"🥇": s===3?"🥈": s===2?"🥉":"⬜"; }
+
+/* ---- สร้างข้อมูลสำหรับส่งขึ้น Google Sheets ---- */
+function buildRecord(){
+  const g = S.result;
+  const dur = S.startAt ? Math.round((Date.now()-S.startAt)/1000) : 0;
+  const rec = {
+    v:1, id:S.id, ts:new Date().toISOString(),
+    first:S.st.first, last:S.st.last, cls:S.st.cls, no:S.st.no,
+    starter:LINES[S.starter].names[2], paper:S.code,
+    z1:g.zones[0].score, z2:g.zones[1].score, z3:g.zones[2].score,
+    z4:g.zones[3].score, z5:g.zones[4].score,
+    total:g.total, pct:g.pct, rank:g.rank,
+    mins:Math.round(dur/60*10)/10, timedOut:S.timedOut?"หมดเวลา":"ส่งเอง",
+    hints:g.zones.reduce((a,b)=>a+b.hints,0), blur:S.blur,
+    pastes:g.zones.reduce((a,z)=>a+z.qs.filter(q=>q.pasted).length,0),
+    review:g.zones.reduce((a,z)=>a+z.qs.filter(q=>q.review).length,0),
+    comment:S.comment, fun:S.fun, diff:S.diff,
+    ua:(navigator.userAgent||"").slice(0,90)
+  };
+  g.zones.forEach((z,i)=> z.qs.forEach((q,j)=>{
+    rec["a"+(i+1)+"_"+(j+1)] = q.text;
+    rec["s"+(i+1)+"_"+(j+1)] = q.score;
+  }));
+  return rec;
+}
+function shortCode(){
+  const g=S.result;
+  const o={n:S.st.first+" "+S.st.last,c:S.st.cls,no:S.st.no,p:S.code,
+           s:g.zones.map(z=>z.score),t:g.total,cm:(S.comment||"").slice(0,120)};
+  return b64(JSON.stringify(o));
+}
+function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
+function unb64(s){ return decodeURIComponent(escape(atob(s.trim()))); }
+
+/* ---- ส่งข้อมูลขึ้น Google Sheets (พยายาม 3 วิธี) ---- */
+async function sendToSheet(rec){
+  if(!CFG.GAS_URL) return {ok:false, why:"nourl"};
+  const body = JSON.stringify(rec);
+  for(let i=0;i<3;i++){
+    try{
+      const r = await fetch(CFG.GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body,redirect:"follow"});
+      if(r.ok) return {ok:true};
+    }catch(e){}
+    try{
+      await fetch(CFG.GAS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body});
+      return {ok:true, opaque:true};
+    }catch(e){}
+    await sleep(900*(i+1));
+  }
+  try{
+    if(navigator.sendBeacon && navigator.sendBeacon(CFG.GAS_URL, new Blob([body],{type:"text/plain;charset=utf-8"}))) return {ok:true,beacon:true};
+  }catch(e){}
+  return {ok:false, why:"net"};
+}
+
+/* ---- ดาวน์โหลดไฟล์ ---- */
+function download(name, text, mime){
+  const blob = new Blob(["\ufeff"+text],{type:(mime||"text/plain")+";charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function toast(msg){
+  const t=document.createElement("div"); t.className="toast"; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2400);
+}
+
+/* ---- ภาพ SVG (ออกแบบขึ้นใหม่ทั้งหมด ไม่ใช้ตัวละครที่มีลิขสิทธิ์) ---- */
+function eggSVG(i,size){
+  const L=LINES[i], s=size||96;
+  return `<svg viewBox="0 0 100 120" width="${s}" height="${s*1.2}" aria-hidden="true">
+   <defs><radialGradient id="eg${i}" cx="38%" cy="30%"><stop offset="0" stop-color="${L.hue2}"/><stop offset="1" stop-color="${L.hue}"/></radialGradient></defs>
+   <ellipse cx="50" cy="110" rx="30" ry="6" fill="#000" opacity=".35"/>
+   <path d="M50 8 C78 8 92 44 92 70 C92 96 74 112 50 112 C26 112 8 96 8 70 C8 44 22 8 50 8Z" fill="url(#eg${i})"/>
+   <path d="M50 8 C36 14 30 34 32 50 C24 44 20 60 26 70" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+   <circle cx="38" cy="66" r="5" fill="#fff" opacity=".28"/><circle cx="62" cy="84" r="7" fill="#fff" opacity=".18"/>
+   <circle cx="58" cy="52" r="3.5" fill="#fff" opacity=".22"/></svg>`;
+}
+function creatureSVG(i,stage,size){
+  const L=LINES[i], s=size||120, c=L.hue, c2=L.hue2;
+  const crest = stage>=2 ? `<path d="M50 12 L38 -2 L48 4 L50 -10 L52 4 L62 -2 Z" fill="${c2}" transform="translate(0,14)"/>` : `<path d="M50 18 L44 6 L50 10 L56 6 Z" fill="${c2}"/>`;
+  const wings = stage>=3 ? `<path d="M18 58 C-6 44 -2 78 20 76 Z" fill="${c2}" opacity=".85"/><path d="M82 58 C106 44 102 78 80 76 Z" fill="${c2}" opacity=".85"/>` : "";
+  const aura = stage>=3 ? `<circle cx="50" cy="62" r="46" fill="none" stroke="${c2}" stroke-width="1.5" stroke-dasharray="4 6" opacity=".7"><animateTransform attributeName="transform" type="rotate" from="0 50 62" to="360 50 62" dur="9s" repeatCount="indefinite"/></circle>` : "";
+  const tail = stage>=2 ? `<path d="M74 92 C92 96 96 78 86 72" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"/>` : "";
+  const body = stage===1 ? 30 : stage===2 ? 34 : 36;
+  return `<svg viewBox="0 0 100 118" width="${s}" height="${s*1.18}" aria-hidden="true">
+   <defs><radialGradient id="cg${i}${stage}" cx="38%" cy="28%"><stop offset="0" stop-color="${c2}"/><stop offset="1" stop-color="${c}"/></radialGradient></defs>
+   ${aura}<ellipse cx="50" cy="112" rx="26" ry="5" fill="#000" opacity=".35"/>${wings}${tail}
+   <circle cx="50" cy="62" r="${body}" fill="url(#cg${i}${stage})"/>
+   ${crest}
+   <ellipse cx="38" cy="58" rx="7" ry="8.5" fill="#141033"/><ellipse cx="62" cy="58" rx="7" ry="8.5" fill="#141033"/>
+   <circle cx="40.5" cy="55" r="2.6" fill="#fff"/><circle cx="64.5" cy="55" r="2.6" fill="#fff"/>
+   <path d="M43 74 Q50 81 57 74" fill="none" stroke="#141033" stroke-width="2.6" stroke-linecap="round"/>
+   <circle cx="27" cy="70" r="4.5" fill="#fff" opacity=".22"/>
+   <circle cx="30" cy="72" r="5" fill="${c2}" opacity=".35"/><circle cx="70" cy="72" r="5" fill="${c2}" opacity=".35"/></svg>`;
+}
+function bossSVG(zi,size){
+  const cols=["#7A6BFF","#4BE0A8","#FF5D8F","#C77DFF","#FFC24B"], c=cols[zi], s=size||110;
+  return `<svg viewBox="0 0 120 110" width="${s}" height="${s*.92}" aria-hidden="true">
+   <defs><linearGradient id="bg${zi}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="#1A1140"/></linearGradient></defs>
+   <path d="M22 34 L14 8 L34 22 M98 34 L106 8 L86 22" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+   <path d="M60 12 C92 12 106 40 104 66 C102 92 84 102 60 102 C36 102 18 92 16 66 C14 40 28 12 60 12Z" fill="url(#bg${zi})"/>
+   <path d="M34 52 L52 60 L34 66Z" fill="#FFF" opacity=".92"/><path d="M86 52 L68 60 L86 66Z" fill="#FFF" opacity=".92"/>
+   <circle cx="42" cy="59" r="4" fill="#0E0B1F"/><circle cx="78" cy="59" r="4" fill="#0E0B1F"/>
+   <path d="M40 82 L48 76 L56 82 L64 76 L72 82 L80 76" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" opacity=".85"/></svg>`;
+}
+
+/* ---- นาฬิกาจับเวลา ---- */
+function startClock(){
+  if(TICK) clearInterval(TICK);
+  TICK = setInterval(()=>{
+    if(!S || S.submitted || !S.deadline) return;
+    const left = Math.round((S.deadline-Date.now())/1000);
+    const el = $("#clock");
+    if(el){
+      el.textContent = mmss(left);
+      el.className = "timer" + (left<=60?" crit": left<=300?" warn":"");
+    }
+    if(left<=0){ S.timedOut=true; finishExam(true); }
+  },1000);
+}
+function left(){ return S && S.deadline ? Math.round((S.deadline-Date.now())/1000) : CFG.EXAM_MINUTES*60; }
+
+window.addEventListener("beforeunload", e=>{
+  if(S && S.startAt && !S.submitted){ save(); e.preventDefault(); e.returnValue=""; }
+});
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden && S && S.startAt && !S.submitted){ S.blur++; save(); }
+});
+/* =====================================================================
+   หน้าจอนักเรียน
+   ===================================================================== */
+function hud(){
+  const L=LINES[S.starter];
+  const done=S.zdone.filter(Boolean).length;
+  const stage = done>=4?3 : done>=2?2 : 1;
+  const pips = S.zdone.map((d,i)=>`<i class="pip ${d?"done":(i===S.zone?"now":"")}"></i>`).join("");
+  return `<div class="hud"><div class="hud-in">
+    <div style="width:34px">${creatureSVG(S.starter,stage,34)}</div>
+    <div class="who">${esc(S.st.first)} ${esc(S.st.last)}<small>${esc(S.st.cls)} เลขที่ ${esc(S.st.no)} · ชุด ${S.code}</small></div>
+    <div class="spacer"></div>
+    <div class="pips" title="ความคืบหน้า">${pips}</div>
+    <div id="clock" class="timer">${mmss(left())}</div>
+  </div></div>`;
+}
+
+/* ---------- 1. ลงทะเบียนนักเทรนเนอร์ ---------- */
+function screenRegister(){
+  app.innerHTML = `<div class="wrap narrow">
+    <div class="hero">
+      <div class="float" style="display:flex;justify-content:center;gap:6px">
+        ${eggSVG(0,60)}${eggSVG(1,74)}${eggSVG(2,60)}
+      </div>
+      <h1 class="logo">GENOMON</h1>
+      <div class="tagline">ศึกนักเพาะพันธุ์แห่งยีน</div>
+      <div class="sub">${esc(CFG.EXAM_TITLE)} · ${CFG.TOTAL_POINTS} คะแนน · ${CFG.EXAM_MINUTES} นาที<br>โดย ${esc(CFG.TEACHER_NAME)}</div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <span class="eyebrow">ขั้นที่ 1 — ลงทะเบียนนักเทรนเนอร์</span>
+      <h2 style="margin-bottom:12px">กรอกข้อมูลให้ครบก่อนออกเดินทาง</h2>
+      <div class="grid2">
+        <div class="field"><label for="f1">ชื่อ</label><input id="f1" autocomplete="off" placeholder="เช่น สมชาย"></div>
+        <div class="field"><label for="f2">นามสกุล</label><input id="f2" autocomplete="off" placeholder="เช่น ใจดี"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="f3">ชั้น</label><select id="f3">${CFG.CLASSES.map(c=>`<option>${c}</option>`).join("")}</select></div>
+        <div class="field"><label for="f4">เลขที่</label><input id="f4" type="number" min="1" max="60" inputmode="numeric" placeholder="เช่น 12"></div>
+      </div>
+      <div class="err" id="err"></div>
+      <button class="btn block" id="go">รับไข่ของฉัน →</button>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="eyebrow">กติกาการผจญภัย</span>
+      <ul class="rules">
+        <li><i class="dot"></i><span>มี <b>5 ด่าน</b> ด่านละ <b>4 คะแนน</b> รวม <b>${CFG.TOTAL_POINTS} คะแนน</b> · แต่ละด่านมี 2 คำถาม ข้อละ 2 คะแนน</span></li>
+        <li><i class="dot"></i><span>เวลารวม <b>${CFG.EXAM_MINUTES} นาที</b> เริ่มนับเมื่อกด "ออกเดินทาง" · ควรใช้ด่านละไม่เกิน <b>${CFG.ZONE_MINUTES} นาที</b> เหลือ 5 นาทีสุดท้ายไว้ทบทวน</span></li>
+        <li><i class="dot"></i><span>เป็นข้อสอบ <b>อัตนัย (เขียนตอบ)</b> เน้นการคิดวิเคราะห์จากข้อมูล — ต้อง <b>อธิบายเหตุผล</b> เสมอ ตอบสั้นห้วนจะไม่ได้คะแนนเต็ม</span></li>
+        <li><i class="dot"></i><span>ระบบสุ่มชุดข้อสอบจากชื่อ-เลขที่ของเธอ <b>เพื่อนข้าง ๆ อาจได้คนละชุด</b> · กด F5 ก็ได้ชุดเดิมและเวลาเดิม ไม่ต้องกลัวข้อมูลหาย</span></li>
+        <li><i class="dot"></i><span>ย้อนกลับไปแก้คำตอบด่านเก่าได้ตลอด จนกว่าจะกด "ส่งคำตอบ"</span></li>
+      </ul>
+    </div>
+    <div class="foot noprint">GENOMON เป็นสัตว์ในจินตนาการที่ออกแบบขึ้นใหม่สำหรับแบบทดสอบนี้ · <a href="?teacher=1">สำหรับครู</a></div>
+  </div>`;
+
+  const prev = load();
+  if(prev && prev.st && !prev.submitted && prev.deadline && prev.deadline>Date.now()){
+    $("#f1").value=prev.st.first; $("#f2").value=prev.st.last;
+    $("#f3").value=prev.st.cls; $("#f4").value=prev.st.no;
+    $("#err").innerHTML = `<span style="color:var(--jade)">พบการผจญภัยที่ยังไม่จบ เหลือเวลา ${mmss(Math.round((prev.deadline-Date.now())/1000))} — <button class="btn sm jade" id="resume">เล่นต่อ</button></span>`;
+    $("#resume").onclick = ()=>{ S=prev; startClock(); render(); };
+  }
+
+  $("#go").onclick = ()=>{
+    const st = { first:$("#f1").value.trim(), last:$("#f2").value.trim(), cls:$("#f3").value, no:$("#f4").value.trim() };
+    if(!st.first||!st.last||!st.no){ $("#err").textContent="กรอกชื่อ นามสกุล และเลขที่ให้ครบก่อนนะ"; return; }
+    if(!(+st.no>=1 && +st.no<=60)){ $("#err").textContent="เลขที่ต้องอยู่ระหว่าง 1–60"; return; }
+    S = newState(st); S.screen="egg"; save(); render();
+  };
+  $("#f4").addEventListener("keydown", e=>{ if(e.key==="Enter") $("#go").click(); });
+}
+
+/* ---------- 2. เลือกไข่ ---------- */
+function screenEgg(){
+  const pick = S.starter;
+  app.innerHTML = `<div class="wrap narrow">
+    <div class="hero" style="padding-top:26px">
+      <span class="eyebrow">ขั้นที่ 2 — รับไข่</span>
+      <h2 style="font-size:1.6rem">โชคชะตาเลือกไข่ให้เธอแล้ว</h2>
+      <p class="sub">ระบบจับคู่ไข่จากชื่อของเธอ — ไข่ใบนี้เป็นของเธอคนเดียว</p>
+    </div>
+    <div class="eggs">${LINES.map((L,i)=>`
+      <div class="egg ${i===pick?"on":""}">
+        <div class="${i===pick?"float":""}" style="opacity:${i===pick?1:.3}">${eggSVG(i,i===pick?86:60)}</div>
+        <div class="nm">${L.egg}</div>
+        <div class="ds">${L.type}<br>${i===pick?L.desc:"—"}</div>
+      </div>`).join("")}</div>
+    <div class="card" style="margin-top:18px;text-align:center">
+      <p style="margin-bottom:6px">เธอได้รับ <b style="color:${LINES[pick].hue}">${LINES[pick].egg}</b> — ${LINES[pick].desc}</p>
+      <p class="muted" style="font-size:.9rem;margin-bottom:14px">ไข่จะฟักเมื่อเธอออกเดินทาง และ<b> นาฬิกาจะเริ่มนับ ${CFG.EXAM_MINUTES} นาที ทันที</b></p>
+      <button class="btn" id="hatch">ฟักไข่และออกเดินทาง</button>
+    </div>
+  </div>`;
+  $("#hatch").onclick = screenHatch;
+}
+
+/* ---------- 3. ฟักไข่ ---------- */
+async function screenHatch(){
+  const L=LINES[S.starter];
+  app.innerHTML = `<div class="wrap narrow" style="text-align:center;padding-top:70px">
+    <div id="eg" class="hatching">${eggSVG(S.starter,150)}</div>
+    <h2 id="msg" style="margin-top:22px">ไข่กำลังสั่น...</h2>
+  </div>`;
+  await sleep(1800);
+  const f=document.createElement("div"); f.className="flash"; document.body.appendChild(f);
+  setTimeout(()=>f.remove(),600);
+  $("#eg").innerHTML = `<div class="pop">${creatureSVG(S.starter,1,170)}</div>`;
+  $("#eg").className = "float";
+  $("#msg").innerHTML = `<span style="color:${L.hue}">${L.names[0]}</span> ฟักออกมาแล้ว!`;
+  await sleep(1500);
+  S.startAt = Date.now();
+  S.deadline = Date.now() + CFG.EXAM_MINUTES*60*1000;
+  S.screen="map"; save(); startClock(); render();
+}
+
+/* ---------- 4. แผนที่การผจญภัย ---------- */
+function screenMap(){
+  const done = S.zdone.filter(Boolean).length;
+  const stage = done>=4?3 : done>=2?2 : 1;
+  const L=LINES[S.starter];
+  const nodes = BANK.map((z,i)=>{
+    const open = i===0 || S.zdone[i-1] || S.zdone[i];
+    const st = S.zdone[i]?"done":(open?"now":"");
+    const badge = S.zdone[i]
+      ? `<span class="badge">ผ่านแล้ว</span>`
+      : (open?`<span class="badge" style="background:var(--yolk)">ท้าดวล</span>`:`<span class="badge wait">ล็อก</span>`);
+    return `<button class="node ${st}" data-z="${i}" ${open?"":"disabled"}>
+      <span class="zicon">${z.icon}</span>
+      <span><span class="zn">ด่าน ${i+1} · ${z.name}</span><br>
+      <span class="zs">บอส: ${z.boss} — ${z.bossDesc} · 4 คะแนน</span></span>
+      ${badge}</button>`;
+  }).join("");
+  const allDone = S.zdone.every(Boolean);
+  app.innerHTML = hud() + `<div class="wrap">
+    <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div class="float">${creatureSVG(S.starter,stage,90)}</div>
+      <div style="flex:1;min-width:200px">
+        <span class="eyebrow">ผู้ติดตามของเธอ</span>
+        <h2 style="color:${L.hue}">${L.names[stage-1]}</h2>
+        <div class="bar xp" style="max-width:280px"><i style="width:${done/5*100}%"></i></div>
+        <div class="muted mono" style="font-size:.78rem;margin-top:4px">ผ่านแล้ว ${done}/5 ด่าน ${done>=4?"· ร่างสมบูรณ์!":done>=2?"· วิวัฒนาการขั้นที่ 2!":"· ผ่าน 2 ด่านเพื่อวิวัฒนาการ"}</div>
+      </div>
+    </div>
+    <h3 style="margin:22px 0 4px">เส้นทางผจญภัย</h3>
+    <p class="muted" style="font-size:.9rem">คะแนนของแต่ละด่านจะถูกเก็บเป็น "พลังโจมตี" และเปิดเผยทั้งหมดในตอนจบ</p>
+    <div class="route">${nodes}</div>
+    <div style="margin-top:22px;text-align:center">
+      <button class="btn ${allDone?"":"ghost"}" id="fin">${allDone?"⚔️ เข้าสู่ศึกตัดสิน — ส่งคำตอบ":"ส่งคำตอบก่อนกำหนด"}</button>
+      <p class="muted" style="font-size:.84rem;margin-top:8px">${allDone?"ทำครบทุกด่านแล้ว! กดเพื่อดูคะแนน":"ยังทำไม่ครบ ข้อที่ยังไม่ตอบจะได้ 0 คะแนน"}</p>
+    </div>
+  </div>`;
+  document.querySelectorAll(".node").forEach(b=> b.onclick = ()=>{ S.zone=+b.dataset.z; S.screen="zone"; S.zoneEnter=Date.now(); save(); render(); });
+  $("#fin").onclick = ()=> confirmFinish();
+}
+
+/* ---------- 5. ด่านสอบ ---------- */
+function screenZone(){
+  const zi=S.zone, z=BANK[zi], v=z.variants[S.paper[zi]];
+  const rec = CFG.ZONE_MINUTES*60;
+  app.innerHTML = hud() + `<div class="wrap">
+    <div class="battle">
+      <div>
+        <div class="hp"><div class="lbl">${z.boss} <span>${z.bossDesc}</span></div>
+        <div class="bar"><i style="width:100%"></i></div></div>
+        <div class="muted mono" style="font-size:.72rem;margin-top:4px">พลังชีวิต ???</div>
+      </div>
+      <div style="text-align:center">${bossSVG(zi,96)}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <h2 style="font-size:1.25rem">ด่าน ${zi+1} · ${z.name} <span class="chip">ชุด ${v.code}</span></h2>
+      <span class="muted mono" style="font-size:.78rem">เวลาแนะนำสำหรับด่านนี้ ${CFG.ZONE_MINUTES}:00</span>
+    </div>
+    <p class="muted" style="margin-bottom:16px;font-size:.95rem">${z.intro}</p>
+
+    <div class="cols">
+      <div class="stim">
+        <div class="card">
+          <span class="eyebrow">สถานการณ์</span>
+          <h3>${v.title}</h3>
+          ${v.stim}
+        </div>
+      </div>
+      <div>
+        ${v.qs.map((q,qi)=>{
+          const key="z"+zi+"q"+qi;
+          const val=S.ans[key]||"";
+          return `<div class="card q" style="margin-bottom:14px">
+            <div class="qhead"><span class="qno">ข้อ ${qi+1}</span><span class="qpt">2 คะแนน</span></div>
+            <p class="prompt">${q.p}</p>
+            <textarea class="ans" id="${key}" data-k="${key}" placeholder="เขียนคำตอบพร้อมเหตุผล... (อ้างข้อมูลจากสถานการณ์ประกอบด้วย)">${esc(val)}</textarea>
+            <div class="meter"><span id="m-${key}"></span><span>แนะนำ 60–300 ตัวอักษร</span></div>
+            ${CFG.HINTS?`<button class="btn ghost sm" style="margin-top:8px" data-hint="${key}">💡 ขอคำใบ้จากโค้ช</button><div id="h-${key}"></div>`:""}
+          </div>`;
+        }).join("")}
+        <div class="actions">
+          <button class="btn ghost" id="back">← แผนที่</button>
+          <button class="btn jade" id="next">${zi<4?"บันทึกและไปด่านถัดไป →":"บันทึกและกลับแผนที่ →"}</button>
+          <span class="saved" id="sv">บันทึกแล้ว ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  document.querySelectorAll("textarea.ans").forEach(t=>{
+    const k=t.dataset.k;
+    const upd=()=>{
+      const n=t.value.trim().length;
+      const m=$("#m-"+k);
+      m.textContent = n+" ตัวอักษร";
+      m.className = n===0?"":(n<CFG.MIN_CHARS?"low":(n<60?"":"ok"));
+      if(n>0 && n<CFG.MIN_CHARS) m.textContent = n+" ตัวอักษร — สั้นเกินไป";
+    };
+    upd();
+    t.addEventListener("input", ()=>{ S.ans[k]=t.value; upd(); flagSaved(); save(); });
+    t.addEventListener("paste", ()=>{ S.pasted[k]=true; save(); });
+    t.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="Enter") $("#next").click(); });
+  });
+  document.querySelectorAll("[data-hint]").forEach(b=> b.onclick=()=>{
+    const k=b.dataset.hint, qi=+k.slice(-1);
+    S.hints[k]=true; save();
+    $("#h-"+k).innerHTML = `<div class="coach"><b>โค้ช:</b> ${v.qs[qi].hint}</div>`;
+    b.remove();
+  });
+  $("#back").onclick=()=>{ leaveZone(); S.screen="map"; save(); render(); };
+  $("#next").onclick=()=>{
+    leaveZone();
+    S.zdone[zi]=1;
+    if(zi<4 && !S.zdone[zi+1]){ S.zone=zi+1; S.zoneEnter=Date.now(); S.screen="zone"; }
+    else S.screen="map";
+    save(); render();
+    if(zi===1||zi===3) toast("⚡ " + LINES[S.starter].names[zi===1?1:2] + " วิวัฒนาการแล้ว!");
+  };
+}
+function leaveZone(){
+  if(S.zoneEnter){ S.ztime[S.zone]=(S.ztime[S.zone]||0)+Math.round((Date.now()-S.zoneEnter)/1000); S.zoneEnter=null; }
+}
+let svT=null;
+function flagSaved(){
+  const el=$("#sv"); if(!el) return;
+  el.classList.add("on"); clearTimeout(svT);
+  svT=setTimeout(()=>el.classList.remove("on"),1200);
+}
+/* =====================================================================
+   ศึกตัดสิน + ผลคะแนน
+   ===================================================================== */
+function confirmFinish(){
+  const blank = [];
+  BANK.forEach((z,zi)=> z.variants[S.paper[zi]].qs.forEach((q,qi)=>{
+    if(!(S.ans["z"+zi+"q"+qi]||"").trim()) blank.push("ด่าน "+(zi+1)+" ข้อ "+(qi+1));
+  }));
+  const msg = blank.length
+    ? "ยังไม่ได้ตอบ "+blank.length+" ข้อ ("+blank.join(", ")+")\nข้อที่ไม่ตอบจะได้ 0 คะแนน\n\nยืนยันส่งคำตอบเลยหรือไม่? (ส่งแล้วแก้ไม่ได้)"
+    : "ตอบครบทุกข้อแล้ว\n\nยืนยันส่งคำตอบ? (ส่งแล้วแก้ไม่ได้)";
+  if(confirm(msg)) finishExam(false);
+}
+
+async function finishExam(auto){
+  if(S.submitted) return;
+  leaveZone();
+  S.submitted = true;
+  if(auto) S.timedOut = true;
+  if(TICK) clearInterval(TICK);
+  S.result = grade();
+  S.screen = "result";
+  save();
+  await showdown(auto);
+  render();
+  autoSend();
+}
+
+/* ---- ฉากศึกตัดสิน: ปล่อยพลังโจมตีสะสมทั้ง 5 ด่านทีละครั้ง ---- */
+async function showdown(auto){
+  const g=S.result, L=LINES[S.starter];
+  app.innerHTML = `<div class="wrap narrow" style="text-align:center;padding-top:40px">
+    <span class="eyebrow">${auto?"หมดเวลา — ศึกตัดสินเริ่มขึ้นทันที":"ศึกตัดสิน"}</span>
+    <h2 style="margin-bottom:14px">พลังที่เธอสะสมมาทั้ง 5 ด่าน กำลังปลดปล่อย</h2>
+    <div id="bossbox">${bossSVG(4,130)}</div>
+    <div class="bar" style="max-width:340px;margin:14px auto"><i id="bhp" style="width:100%"></i></div>
+    <div class="mono muted" id="hptxt">HP 100%</div>
+    <div id="hits" style="margin-top:18px;min-height:150px"></div>
+    <div style="margin-top:10px">${creatureSVG(S.starter,g.stage,90)}</div>
+  </div>`;
+  await sleep(700);
+  let hp=100;
+  for(let i=0;i<5;i++){
+    const z=g.zones[i];
+    hp -= z.score/CFG.TOTAL_POINTS*100;
+    const bb=$("#bossbox"); if(bb){ bb.style.transform="translateX(6px)"; setTimeout(()=>{ if(bb) bb.style.transform="translateX(0)"; },130); }
+    const b=$("#bhp"); if(b) b.style.width=Math.max(0,hp)+"%";
+    const t=$("#hptxt"); if(t) t.textContent="HP "+Math.max(0,Math.round(hp))+"%";
+    const h=$("#hits");
+    if(h) h.insertAdjacentHTML("beforeend",
+      `<div class="pop" style="font-family:var(--mono);font-size:1rem;margin-bottom:4px">
+        ด่าน ${i+1} ${BANK[i].icon} → <b style="color:${z.score>=3?"#4BE0A8":z.score>=2?"#FFC24B":"#FF5D8F"}">${z.score}/4</b> ${medalOf(z.score)}</div>`);
+    await sleep(750);
+  }
+  await sleep(600);
+}
+
+/* ---- หน้าผลคะแนน ---- */
+function screenResult(){
+  const g=S.result, L=LINES[S.starter];
+  const rev = CFG.REVEAL;
+  const fbHtml = (z)=>{
+    if(rev==="none") return "";
+    return z.qs.map((q,qi)=>{
+      const rub = BANK[z.zi].variants[S.paper[z.zi]].qs[qi].rub;
+      const lines = rev==="concepts"
+        ? rub.map((c,ci)=>`<div><span class="${q.hits.indexOf(ci)>=0?"hit":"miss"}">${q.hits.indexOf(ci)>=0?"✓":"○"}</span><span class="${q.hits.indexOf(ci)>=0?"hit":"miss"}">${esc(c.d)}</span></div>`).join("")
+        : "";
+      return `<div style="margin-top:8px;padding-left:10px;border-left:2px solid var(--membrane)">
+        <div class="mono" style="font-size:.78rem;color:var(--mist)">ข้อ ${qi+1} — ได้ ${q.score}/2 คะแนน${q.short?" (คำตอบสั้นเกินไป)":""}</div>
+        <div class="fb">${lines}</div></div>`;
+    }).join("");
+  };
+  app.innerHTML = `<div class="wrap narrow">
+    <div class="card" style="text-align:center;margin-top:20px">
+      <span class="eyebrow">ผลการผจญภัย${S.timedOut?" · หมดเวลา":""}</span>
+      <div class="float" style="margin:6px 0">${creatureSVG(S.starter,g.stage,110)}</div>
+      <div class="score-big">${g.total}<small> / ${CFG.TOTAL_POINTS}</small></div>
+      <div class="rank">${g.medal} ${g.rank}</div>
+      <div class="muted mono" style="font-size:.8rem;margin-top:4px">
+        ${esc(S.st.first)} ${esc(S.st.last)} · ${esc(S.st.cls)} เลขที่ ${esc(S.st.no)} · ชุด ${S.code} · ${g.pct}%
+      </div>
+      <div class="status pend" style="text-align:left;margin-top:14px">
+        <b>หมายเหตุสำคัญ:</b> คะแนนนี้เป็น <b>คะแนนเบื้องต้นจากระบบตรวจอัตโนมัติ</b> ซึ่งดูจากประเด็นสำคัญในคำตอบ
+        ครูจะอ่านคำตอบของเธอทุกข้ออีกครั้งและปรับคะแนนให้ตรงกับคุณภาพของเหตุผลที่เขียนจริง
+        คะแนนสุดท้ายอาจเพิ่มขึ้นได้
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="eyebrow">คะแนนรายด่าน</span>
+      ${g.zones.map(z=>`
+        <div class="zscore">
+          <span class="medal">${medalOf(z.score)}</span>
+          <span><b>ด่าน ${z.zi+1} · ${z.zone}</b> <span class="chip">ชุด ${z.variant}</span><br>
+            <span class="muted" style="font-size:.85rem">${z.title} · ใช้เวลา ${mmss(z.sec)}</span>
+            ${fbHtml(z)}
+          </span>
+          <span class="mono" style="font-size:1.15rem;color:${z.score>=3?"var(--jade)":z.score>=2?"var(--yolk)":"var(--rose)"}">${z.score}/4</span>
+        </div>`).join("")}
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="eyebrow">ส่งถึงครู</span>
+      <h3 style="margin-bottom:8px">ข้อคิดเห็นถึง ${esc(CFG.TEACHER_NAME)}</h3>
+      <p class="muted" style="font-size:.9rem;margin-bottom:10px">เกมนี้สนุกไหม? ข้อไหนยาก? อยากให้ครูสอนเรื่องอะไรเพิ่ม? เขียนได้เต็มที่เลย ครูอ่านทุกข้อความ</p>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="field"><label>ความสนุก</label><div class="stars" id="fun">${[1,2,3,4,5].map(i=>`<button class="star" data-f="${i}">★</button>`).join("")}</div></div>
+        <div class="field"><label>ความยาก</label><div class="stars" id="diff">${[1,2,3,4,5].map(i=>`<button class="star" data-d="${i}">★</button>`).join("")}</div></div>
+      </div>
+      <div class="field"><textarea id="cm" rows="4" placeholder="เขียนถึงครู...">${esc(S.comment)}</textarea></div>
+      <div class="actions">
+        <button class="btn jade" id="send">ส่งคะแนนและข้อคิดเห็นให้ครู</button>
+        <span class="saved" id="sv">บันทึกแล้ว ✓</span>
+      </div>
+      <div id="st"></div>
+    </div>
+
+    <div class="card noprint" style="margin-top:14px">
+      <span class="eyebrow">แผนสำรอง (ใช้เมื่อครูบอกให้ใช้เท่านั้น)</span>
+      <p class="muted" style="font-size:.9rem">ถ้าอินเทอร์เน็ตมีปัญหา ให้กดปุ่มด้านล่างเพื่อเก็บผลไว้ แล้วส่งไฟล์/รหัสให้ครูทางช่องทางที่ครูกำหนด</p>
+      <div class="tbar">
+        <button class="btn ghost sm" id="dl">⬇ ดาวน์โหลดไฟล์ผลสอบ (.json)</button>
+        <button class="btn ghost sm" id="cp">📋 คัดลอกรหัสผลสอบแบบสั้น</button>
+        <button class="btn ghost sm" id="pr">🖨 พิมพ์/บันทึกเป็น PDF</button>
+      </div>
+      <code class="code" id="code">${shortCode()}</code>
+    </div>
+    <div class="foot">ขอบคุณที่ร่วมผจญภัย · GENOMON</div>
+  </div>`;
+
+  const paint=(sel,attr,val)=> document.querySelectorAll(sel+" .star").forEach(b=> b.classList.toggle("on", +b.dataset[attr]<=val));
+  paint("#fun","f",S.fun); paint("#diff","d",S.diff);
+  document.querySelectorAll("#fun .star").forEach(b=> b.onclick=()=>{ S.fun=+b.dataset.f; paint("#fun","f",S.fun); save(); flagSaved(); });
+  document.querySelectorAll("#diff .star").forEach(b=> b.onclick=()=>{ S.diff=+b.dataset.d; paint("#diff","d",S.diff); save(); flagSaved(); });
+  $("#cm").addEventListener("input", e=>{ S.comment=e.target.value; save(); flagSaved(); $("#code").textContent=shortCode(); });
+  $("#send").onclick = ()=> autoSend(true);
+  $("#dl").onclick = ()=>{
+    const f=`GENOMON_${S.st.cls.replace(/\//g,"-")}_${S.st.no}_${S.st.first}.json`;
+    download(f, JSON.stringify(buildRecord(),null,1), "application/json");
+  };
+  $("#cp").onclick = async ()=>{
+    try{ await navigator.clipboard.writeText(shortCode()); toast("คัดลอกรหัสผลสอบแล้ว"); }
+    catch(e){ toast("คัดลอกไม่ได้ ให้เลือกข้อความในกล่องแล้วคัดลอกเอง"); }
+  };
+  $("#pr").onclick = ()=> window.print();
+  paintStatus();
+}
+
+function paintStatus(){
+  const el=$("#st"); if(!el) return;
+  const m = {
+    idle: CFG.GAS_URL? `<div class="status pend">กำลังเตรียมส่งข้อมูล...</div>`
+                     : `<div class="status pend"><b>ครูยังไม่ได้ตั้งค่าการส่งข้อมูลอัตโนมัติ</b> — ให้ส่งคะแนนด้วยวิธีที่ครูกำหนด (ดูแผนสำรองด้านล่าง)</div>`,
+    sending: `<div class="status pend">⏳ กำลังส่งข้อมูลให้ครู...</div>`,
+    ok: `<div class="status ok">✅ <b>ส่งสำเร็จ!</b> คะแนนและข้อคิดเห็นของเธอถึงมือ ${esc(CFG.TEACHER_NAME)} เรียบร้อยแล้ว<br>ถ้าแก้ข้อคิดเห็นเพิ่ม กด "ส่ง" อีกครั้งได้ ระบบจะอัปเดตทับของเดิม</div>`,
+    fail: `<div class="status bad">⚠️ ส่งไม่สำเร็จ (เน็ตอาจมีปัญหา) — <button class="btn sm" id="retry">ลองส่งอีกครั้ง</button><br>ถ้ายังไม่ได้ ให้ใช้แผนสำรองด้านล่างแล้วแจ้งครู</div>`
+  }[S.sent] || "";
+  el.innerHTML=m;
+  const r=$("#retry"); if(r) r.onclick=()=>autoSend(true);
+}
+async function autoSend(manual){
+  if(!CFG.GAS_URL){ S.sent="idle"; paintStatus(); if(manual) toast("ครูยังไม่ได้เปิดระบบส่งอัตโนมัติ — ใช้แผนสำรองด้านล่าง"); return; }
+  S.sent="sending"; paintStatus();
+  const r = await sendToSheet(buildRecord());
+  S.sent = r.ok? "ok":"fail"; save(); paintStatus();
+  if(manual) toast(r.ok? "ส่งให้ครูเรียบร้อย":"ส่งไม่สำเร็จ ลองใหม่อีกครั้ง");
+}
+
+/* =====================================================================
+   หน้าครู  (เปิดด้วย ?teacher=1)
+   ===================================================================== */
+function screenTeacher(){
+  app.innerHTML = `<div class="wrap narrow" style="padding-top:60px">
+    <div class="card">
+      <span class="eyebrow">พื้นที่สำหรับครู</span>
+      <h2 style="margin-bottom:12px">ใส่รหัสผ่าน</h2>
+      <div class="field"><input id="pin" type="password" placeholder="รหัสครู"></div>
+      <div class="err" id="e2"></div>
+      <button class="btn block" id="ok">เข้าสู่ระบบ</button>
+      <p class="muted" style="font-size:.85rem;margin-top:10px">ลืมรหัส? เปิดไฟล์ .html ด้วย Text Editor แล้วดูที่ <span class="mono">CFG.TEACHER_PIN</span></p>
+    </div></div>`;
+  $("#ok").onclick=()=>{
+    if($("#pin").value.trim()===String(CFG.TEACHER_PIN)) teacherConsole();
+    else $("#e2").textContent="รหัสไม่ถูกต้อง";
+  };
+  $("#pin").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#ok").click(); });
+}
+
+let TROWS=[];
+function teacherConsole(){
+  app.innerHTML = `<div class="wrap">
+    <h1 class="logo" style="font-size:2rem">GENOMON · ห้องพักครู</h1>
+    <p class="muted" style="margin-bottom:16px">${esc(CFG.EXAM_TITLE)} · ${esc(CFG.TEACHER_NAME)}</p>
+
+    <div class="card">
+      <span class="eyebrow">วิธีที่ 1 — ดูคะแนนจาก Google Sheets (แนะนำ)</span>
+      <p style="font-size:.95rem">${CFG.GAS_URL
+        ? `ระบบส่งข้อมูลอัตโนมัติ <b style="color:var(--jade)">เปิดใช้งานแล้ว</b> — คะแนนของนักเรียนทุกคนจะไหลเข้าชีตทันทีที่กดส่ง เปิด Google Sheet ของครูได้เลย`
+        : `<b style="color:var(--rose)">ยังไม่ได้ตั้งค่า</b> — เปิดไฟล์ .html ด้วย Text Editor แล้ววาง URL ของ Apps Script Web App ลงใน <span class="mono">CFG.GAS_URL</span> (ดูคู่มือครู)`}</p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="eyebrow">วิธีที่ 2 — รวมคะแนนจากรหัส/ไฟล์ผลสอบ (ใช้ตอนเน็ตล่ม)</span>
+      <p class="muted" style="font-size:.9rem;margin-bottom:8px">วางรหัสผลสอบของนักเรียน บรรทัดละ 1 คน หรือเลือกไฟล์ .json ที่นักเรียนดาวน์โหลดมาส่ง</p>
+      <div class="field"><textarea id="codes" rows="4" placeholder="วางรหัสผลสอบที่นี่ บรรทัดละ 1 คน"></textarea></div>
+      <div class="tbar">
+        <button class="btn sm" id="dec">รวมคะแนน</button>
+        <label class="btn ghost sm" style="display:inline-flex">📁 เลือกไฟล์ .json<input type="file" id="fi" accept=".json" multiple hidden></label>
+        <button class="btn ghost sm" id="csv">⬇ ดาวน์โหลด CSV (เปิดใน Excel)</button>
+        <button class="btn ghost sm" id="clr">ล้างตาราง</button>
+      </div>
+      <div id="tbl"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="eyebrow">เฉลย เกณฑ์การให้คะแนน และคลังข้อสอบทั้งหมด</span>
+      <p class="muted" style="font-size:.9rem;margin-bottom:10px">15 สถานการณ์ (5 ด่าน × 3 ชุด) · 30 คำถาม · ใช้เป็นเกณฑ์ตรวจซ้ำด้วยมือ</p>
+      <button class="btn sm" id="pk">🖨 พิมพ์เฉลยทั้งชุด</button>
+      <div id="key" style="margin-top:14px"></div>
+    </div>
+    <div class="foot noprint"><a href="?">← กลับหน้าเกม</a></div>
+  </div>`;
+
+  $("#dec").onclick=()=>{
+    const lines=$("#codes").value.split("\n").map(x=>x.trim()).filter(Boolean);
+    let bad=0;
+    lines.forEach(l=>{ try{ addRow(JSON.parse(unb64(l))); }catch(e){ bad++; } });
+    drawTable(); if(bad) toast("อ่านไม่ได้ "+bad+" บรรทัด");
+  };
+  $("#fi").onchange=(e)=>{
+    const fs=[...e.target.files];
+    let n=0;
+    fs.forEach(f=>{ const rd=new FileReader(); rd.onload=()=>{ try{ addRow(JSON.parse(rd.result)); n++; }catch(x){} if(++cnt===fs.length){ drawTable(); toast("นำเข้า "+n+" ไฟล์"); } }; rd.readAsText(f); });
+    let cnt=0;
+  };
+  $("#csv").onclick=()=>{
+    if(!TROWS.length){ toast("ยังไม่มีข้อมูลในตาราง"); return; }
+    const H=["ชื่อ","สกุล","ชั้น","เลขที่","ชุดข้อสอบ","ด่าน1","ด่าน2","ด่าน3","ด่าน4","ด่าน5","รวม20","ร้อยละ","ข้อคิดเห็น"];
+    const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+    const rows=TROWS.map(r=>[r.first,r.last,r.cls,r.no,r.paper,r.z1,r.z2,r.z3,r.z4,r.z5,r.total,r.pct,r.comment].map(q).join(","));
+    download("GENOMON_คะแนน.csv",[H.map(q).join(",")].concat(rows).join("\n"),"text/csv");
+  };
+  $("#clr").onclick=()=>{ TROWS=[]; drawTable(); };
+  $("#pk").onclick=()=> window.print();
+  drawTable(); drawKey();
+}
+function addRow(o){
+  const r = o.s ? { first:(o.n||"").split(" ")[0]||"", last:(o.n||"").split(" ").slice(1).join(" "), cls:o.c, no:o.no,
+                    paper:o.p, z1:o.s[0],z2:o.s[1],z3:o.s[2],z4:o.s[3],z5:o.s[4], total:o.t,
+                    pct:Math.round(o.t/CFG.TOTAL_POINTS*100), comment:o.cm||"", full:null }
+                : { first:o.first,last:o.last,cls:o.cls,no:o.no,paper:o.paper,z1:o.z1,z2:o.z2,z3:o.z3,z4:o.z4,z5:o.z5,
+                    total:o.total,pct:o.pct,comment:o.comment||"", full:o };
+  const i = TROWS.findIndex(x=>x.cls===r.cls && String(x.no)===String(r.no));
+  if(i>=0) TROWS[i]=r; else TROWS.push(r);
+}
+function drawTable(){
+  const el=$("#tbl"); if(!el) return;
+  if(!TROWS.length){ el.innerHTML=`<p class="muted" style="font-size:.9rem">ยังไม่มีข้อมูล</p>`; return; }
+  TROWS.sort((a,b)=> (a.cls||"").localeCompare(b.cls||"") || (+a.no)-(+b.no));
+  const avg=(TROWS.reduce((a,b)=>a+(+b.total||0),0)/TROWS.length).toFixed(2);
+  const zavg=[1,2,3,4,5].map(i=>(TROWS.reduce((a,b)=>a+(+b["z"+i]||0),0)/TROWS.length).toFixed(2));
+  el.innerHTML = `<p class="mono" style="font-size:.82rem;color:var(--jade);margin:10px 0">
+      ${TROWS.length} คน · เฉลี่ยรวม ${avg}/20 · เฉลี่ยรายด่าน ${zavg.map((v,i)=>"ด่าน"+(i+1)+":"+v).join(" · ")}</p>
+    <div class="scroll"><table class="tt"><tr>
+      <th>ชั้น</th><th>เลขที่</th><th>ชื่อ-สกุล</th><th>ชุด</th>
+      <th>ด1</th><th>ด2</th><th>ด3</th><th>ด4</th><th>ด5</th><th>รวม</th><th>ข้อคิดเห็น</th></tr>
+      ${TROWS.map(r=>`<tr>
+        <td class="n">${esc(r.cls)}</td><td class="n">${esc(r.no)}</td>
+        <td>${esc(r.first)} ${esc(r.last)}</td><td class="n">${esc(r.paper)}</td>
+        <td class="n">${r.z1}</td><td class="n">${r.z2}</td><td class="n">${r.z3}</td><td class="n">${r.z4}</td><td class="n">${r.z5}</td>
+        <td class="n" style="color:var(--yolk);font-weight:600">${r.total}</td>
+        <td style="max-width:240px">${esc(r.comment)}</td></tr>`).join("")}
+    </table></div>`;
+}
+function drawKey(){
+  const el=$("#key"); if(!el) return;
+  el.innerHTML = BANK.map((z,zi)=>`<details class="key"><summary>ด่าน ${zi+1} · ${z.name} (บอส ${z.boss})</summary>
+    ${z.variants.map(v=>`<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--membrane)">
+      <b style="color:var(--cyan)">ชุด ${v.code} — ${v.title}</b>
+      ${v.qs.map((q,qi)=>`<div style="margin-top:8px">
+        <div style="font-size:.92rem"><b>ข้อ ${qi+1} (2 คะแนน):</b> ${q.p}</div>
+        <div style="font-size:.9rem;color:var(--jade);margin-top:4px"><b>แนวคำตอบ:</b> ${esc(q.model)}</div>
+        <div style="font-size:.88rem;color:var(--mist);margin-top:4px"><b>เกณฑ์ (ได้ 2 ใน 3 ประเด็น = เต็ม):</b>
+          <ol style="margin-left:18px">${q.rub.map(c=>`<li>${esc(c.d)}</li>`).join("")}</ol></div>
+      </div>`).join("")}</div>`).join("")}
+  </details>`).join("");
+}
+
+/* =====================================================================
+   ROUTER
+   ===================================================================== */
+function render(){
+  window.scrollTo(0,0);
+  if(!S){ screenRegister(); return; }
+  if(S.screen==="egg") return screenEgg();
+  if(S.screen==="zone") return screenZone();
+  if(S.screen==="result") return screenResult();
+  return screenMap();
+}
+(function boot(){
+  if(/[?&]teacher=1/.test(location.search)){ screenTeacher(); return; }
+  const prev=load();
+  if(prev && prev.submitted && prev.result){ S=prev; render(); return; }
+  render();
+})();
+</script>
+</body>
+</html>
